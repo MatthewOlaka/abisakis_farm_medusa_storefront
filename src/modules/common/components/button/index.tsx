@@ -10,14 +10,7 @@ interface IButtonProps {
 }
 
 export const Button = (props: IButtonProps) => {
-	const {
-		onClick,
-		primaryColor,
-		secondaryColor,
-		borderRadius,
-		size,
-		wrapperClass,
-	} = props;
+	const { onClick, primaryColor, secondaryColor, borderRadius, size, wrapperClass } = props;
 
 	return (
 		<button

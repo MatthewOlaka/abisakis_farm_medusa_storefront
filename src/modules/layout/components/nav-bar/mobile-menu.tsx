@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useId, useState } from 'react';
 import { usePathname, useRouter } from 'next/navigation';
 import LocalizedClientLink from '@modules/common/components/localized-client-link';
 import { Button } from '@modules/common/components/button';
@@ -24,6 +24,10 @@ export default function MobileMenu() {
 	const [open, setOpen] = useState(false);
 	const [productsOpen, setProductsOpen] = useState(false);
 
+	// 👇 Create a stable, SSR/CSR-safe id and use it for BOTH trigger & content
+	const _rid = useId();
+	const contentId = `mobile-menu-${_rid.replace(/[:]/g, '')}`;
+
 	const isActive = (href: string) =>
 		href === '/' ? pathname === '/' : pathname === href || pathname.startsWith(href + '/');
 
@@ -31,9 +35,11 @@ export default function MobileMenu() {
 		<Sheet open={open} onOpenChange={setOpen}>
 			<SheetTrigger asChild>
 				<button
-					className="inline-flex items-center justify-center rounded-md p-2 text-gray-700 hover:bg-gray-100"
+					// This mr-5 might mess up your closing button
+					className="inline-flex items-center justify-center rounded-md text-gray-700 hover:bg-gray-100"
 					aria-label="Toggle menu"
 					aria-expanded={open}
+					aria-controls={contentId}
 				>
 					<svg width="24" height="24" viewBox="0 0 24 24" aria-hidden="true">
 						{open ? (
@@ -56,12 +62,11 @@ export default function MobileMenu() {
 			</SheetTrigger>
 
 			<SheetContent
+				id={contentId}
 				side="top"
-				className="right-0 left-auto z-[998] h-auto w-[320px] max-w-[85vw] rounded-b-sm border border-t-0 bg-yellow-100 p-0 shadow-xl"
+				className="right-0 mt-20 left-auto z-[998] h-auto w-[320px] max-w-[85vw] rounded-b-sm border border-t-0 bg-yellow-100 p-0 shadow-xl"
 			>
-				<SheetTitle className="mt-24 ml-5 text-2xl font-semibold text-green-900 font-serif">
-					Menu
-				</SheetTitle>
+				<SheetTitle className="ml-7 pt-3 text-4xl text-green-900 font-serif">Menu</SheetTitle>
 				<div className="px-6 py-3">
 					<ul className="space-y-1">
 						{/* Products disclosure */}
@@ -142,11 +147,10 @@ export default function MobileMenu() {
 						</li>
 
 						{/* Shop CTA */}
-						<li className="pb-5">
+						<li className="ml-3 pt-3 pb-6">
 							<SheetClose asChild>
 								<Button
 									text="Shop"
-									//   onClick={() => {router.push("/shop"); setOpen(false)}}
 									wrapperClass="font-semibold"
 									primaryColor={isActive('/shop') ? 'bg-amber-600' : 'bg-yellow-500'}
 									secondaryColor="text-green-900"
