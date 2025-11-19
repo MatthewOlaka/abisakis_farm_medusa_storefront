@@ -5,13 +5,14 @@ import { retrieveCustomer } from '@lib/data/customer';
 import { getBaseURL } from '@lib/util/env';
 import { StoreCartShippingOption } from '@medusajs/types';
 import CartMismatchBanner from '@modules/layout/components/cart-mismatch-banner';
-import Footer from '@modules/layout/templates/footer';
+// import Footer from '@modules/layout/templates/footer';
 import FreeShippingPriceNudge from '@modules/shipping/components/free-shipping-price-nudge';
 import Navbar from '@modules/layout/components/nav-bar';
 // import { Inter, Judson } from 'next/font/google';
 // import Nav from '@modules/layout/templates/nav';
 import { Inter, Judson } from 'next/font/google';
 import ScrollProvider from '@modules/generic/scroll-provider';
+import Footer from '@modules/layout/components/footer';
 
 const inter = Inter({ subsets: ['latin'], variable: '--font-inter', display: 'swap' });
 const judson = Judson({

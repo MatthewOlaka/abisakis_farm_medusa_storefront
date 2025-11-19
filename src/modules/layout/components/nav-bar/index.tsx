@@ -14,7 +14,7 @@ export default async function Navbar() {
 			<div className="shy-header sticky top-0 z-[999] bg-[#fffdee]">
 				<nav className="mx-auto flex h-20 max-w-7xl items-center justify-between px-4 sm:px-6 lg:px-8">
 					{/* Left + center: your interactive client navbar */}
-					<LogoLink />
+					<LogoLink wrapperClassname="h-10 w-20" />
 					{/* Right: account (client link) + server cart button */}
 					<div className="flex flex-row-reverse md:flex-row items-center gap-x-4">
 						<NavLinks />

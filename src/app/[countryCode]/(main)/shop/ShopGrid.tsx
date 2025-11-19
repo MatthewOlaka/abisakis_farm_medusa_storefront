@@ -55,7 +55,7 @@ export default async function ShopGrid({
 	return (
 		<div className="flex w-full justify-center">
 			{/* <div className="mx-auto grid max-w-6xl grid-cols-1 gap-x-10 gap-y-20 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 mt-52"> */}
-			<div className="xs:mt-40 xs:gap-y-30 mt-20 grid grid-cols-1 gap-x-10 gap-y-20 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4l">
+			<div className="xs:mt-40 xs:gap-y-32 mt-20 grid grid-cols-1 gap-x-10 gap-y-20 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4l">
 				{products.map((p) => (
 					<ItemCard
 						key={p.id}
