@@ -26,6 +26,8 @@ const LineItemPrice = ({ item, style = 'default', currencyCode }: LineItemPriceP
 								{convertToLocale({
 									amount: originalPrice,
 									currency_code: currencyCode,
+									minimumFractionDigits: 0,
+									maximumFractionDigits: 0,
 								})}
 							</span>
 						</p>
@@ -46,6 +48,8 @@ const LineItemPrice = ({ item, style = 'default', currencyCode }: LineItemPriceP
 						convertToLocale({
 							amount: currentPrice,
 							currency_code: currencyCode,
+							minimumFractionDigits: 0,
+							maximumFractionDigits: 0,
 						})}
 				</span>
 			</div>

@@ -1,7 +1,7 @@
 'use client';
 
-import { useId, useState } from 'react';
-import { usePathname, useRouter } from 'next/navigation';
+import { useState } from 'react';
+import { usePathname } from 'next/navigation';
 import LocalizedClientLink from '@modules/common/components/localized-client-link';
 import { Button } from '@modules/common/components/button';
 import { ChevronDown, ChevronUp } from 'lucide-react';
@@ -19,14 +19,12 @@ export default function MobileMenu() {
 	const rawPath = usePathname() || '/';
 	const normalize = (p: string) => (p || '/').replace(/^\/[a-z]{2}(?=\/|$)/i, '') || '/';
 	const pathname = normalize(rawPath);
-	//   const router = useRouter();
 
 	const [open, setOpen] = useState(false);
 	const [productsOpen, setProductsOpen] = useState(false);
 
-	// 👇 Create a stable, SSR/CSR-safe id and use it for BOTH trigger & content
-	const _rid = useId();
-	const contentId = `mobile-menu-${_rid.replace(/[:]/g, '')}`;
+	// Fixed id prevents SSR/CSR id drift that was causing hydration warnings
+	const contentId = 'mobile-menu-sheet';
 
 	const isActive = (href: string) =>
 		href === '/' ? pathname === '/' : pathname === href || pathname.startsWith(href + '/');

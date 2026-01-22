@@ -35,6 +35,17 @@ const config = {
 			borderWidth: { 1: '1px' },
 			// if you used z-100 anywhere, either switch to z-[100] or add:
 			zIndex: { 100: '100' },
+			// extend scale so large blobText scales work (e.g., scale-400, scale-470)
+			scale: {
+				40: '0.4',
+				150: '1.5',
+				200: '2',
+				250: '2.5',
+				300: '3',
+				350: '3.5',
+				400: '4',
+				470: '4.7',
+			},
 			colors: {
 				grey: {
 					0: '#FFFFFF',
@@ -229,6 +240,23 @@ const config = {
 						transform: 'translateY(0)',
 					},
 				},
+				'scroll-dot': {
+					'0%': {
+						opacity: '0',
+						transform: 'translateY(-8px)',
+					},
+					'20%': {
+						opacity: '1',
+					},
+					'60%': {
+						opacity: '1',
+						transform: 'translateY(10px)',
+					},
+					'100%': {
+						opacity: '0',
+						transform: 'translateY(18px)',
+					},
+				},
 			},
 			animation: {
 				ring: 'ring 2.2s cubic-bezier(0.5, 0, 0.5, 1) infinite',
@@ -240,6 +268,7 @@ const config = {
 				enter: 'enter 200ms ease-out',
 				'slide-in': 'slide-in 1.2s cubic-bezier(.41,.73,.51,1.02)',
 				leave: 'leave 150ms ease-in forwards',
+				'scroll-dot': 'scroll-dot 1.5s ease-in-out infinite',
 			},
 		},
 	},

@@ -8,6 +8,18 @@ import { ICategory } from 'types/global';
 
 /* Map of payment provider_id to their title and icon. Add in any payment providers you want to use. */
 export const paymentInfoMap: Record<string, { title: string; icon: React.JSX.Element }> = {
+	// paystack: {
+	// 	title: 'Paystack',
+	// 	icon: <CreditCard />,
+	// },
+	pp_paystack: {
+		title: 'Paystack',
+		icon: <CreditCard />,
+	},
+	// pp_paystack_paystack: {
+	// 	title: 'Paystack',
+	// 	icon: <CreditCard />,
+	// },
 	pp_stripe_stripe: {
 		title: 'Credit card',
 		icon: <CreditCard />,
@@ -28,6 +40,10 @@ export const paymentInfoMap: Record<string, { title: string; icon: React.JSX.Ele
 		title: 'Manual Payment',
 		icon: <CreditCard />,
 	},
+	// manual: {
+	// 	title: 'Manual Payment',
+	// 	icon: <CreditCard />,
+	// },
 	// Add more payment providers here
 };
 
@@ -35,6 +51,13 @@ export const paymentInfoMap: Record<string, { title: string; icon: React.JSX.Ele
 export const isStripe = (providerId?: string) => {
 	return providerId?.startsWith('pp_stripe_');
 };
+// export const isPaystack = (providerId?: string) => {
+// 	return !!providerId && providerId.toLowerCase().includes('paystack');
+// };
+export const isPaystack = (providerId?: string) => {
+	return providerId?.startsWith('pp_paystack');
+};
+
 export const isPaypal = (providerId?: string) => {
 	return providerId?.startsWith('pp_paypal');
 };
@@ -63,6 +86,7 @@ export const noDivisionCurrencies = [
 	'xag',
 	'xdr',
 	'xau',
+	'kes',
 ];
 
 export const categories: ICategory[] = ['bundle', 'honey', 'coffee', 'more'];

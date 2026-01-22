@@ -75,15 +75,17 @@ export default function ShopIntro() {
 				</div>
 
 				{/* Cayenne (item) */}
-				<div className="drop-item xs:h-40 xs:ml-10 absolute z-10 mt-36 ml-6 h-24 w-full rotate-6 [transform:translateZ(0)] overflow-x-hidden overflow-y-hidden will-change-transform [backface-visibility:hidden]">
-					<Image
-						src="/images/YDCayenne.png"
-						alt="Cayenne Pepper"
-						fill
-						priority
-						className="object-contain rotate-6 "
-						onError={(e) => ((e.target as HTMLImageElement).style.display = 'none')}
-					/>
+				<div className="xs:h-40 xs:ml-10 absolute z-10 mt-36 ml-6 h-24 w-full overflow-x-hidden overflow-y-hidden will-change-transform [backface-visibility:hidden]">
+					<div className="drop-item absolute inset-0 rotate-6 [transform:translateZ(0)]">
+						<Image
+							src="/images/YDCayenne.png"
+							alt="Cayenne Pepper"
+							fill
+							priority
+							className="object-contain rotate-6"
+							onError={(e) => ((e.target as HTMLImageElement).style.display = 'none')}
+						/>
+					</div>
 				</div>
 
 				{/* Paprika (item) */}
@@ -91,34 +93,38 @@ export default function ShopIntro() {
 					// data-scroll
 					// data-scroll-speed="1"
 					data-speed="-0.1"
-					className="drop-item xs:h-40 xs:ml-24 absolute z-10 mt-32 ml-16 h-28 w-full rotate-6 [transform:translateZ(0)] overflow-x-hidden overflow-y-hidden will-change-transform [backface-visibility:hidden]"
+					className="xs:h-40 xs:ml-24 absolute z-10 mt-36 ml-16 h-28 w-full overflow-x-hidden overflow-y-hidden will-change-transform [backface-visibility:hidden]"
 				>
-					<Image
-						src="/images/YDPaprika.png"
-						alt="Paprika"
-						fill
-						priority
-						className="object-contain rotate-6"
-						onError={(e) => ((e.target as HTMLImageElement).style.display = 'none')}
-					/>
+					<div className="drop-item absolute inset-0 rotate-6 [transform:translateZ(0)]">
+						<Image
+							src="/images/YDPaprika.png"
+							alt="Paprika"
+							fill
+							priority
+							className="object-contain rotate-6"
+							onError={(e) => ((e.target as HTMLImageElement).style.display = 'none')}
+						/>
+					</div>
 				</div>
 
 				{/* Squeeze bottle (item) */}
-				<div className="drop-item xs:h-40 xs:-ml-2 absolute z-10 mt-32 -ml-4 h-28 w-full [transform:translateZ(0)] overflow-x-hidden overflow-y-hidden will-change-transform [backface-visibility:hidden]">
-					<Image
-						src="/images/YDSqueezeBottle.png"
-						alt="Honey Squeeze Bottle"
-						fill
-						priority
-						className="object-contain -rotate-6"
-						onError={(e) => ((e.target as HTMLImageElement).style.display = 'none')}
-					/>
+				<div className="xs:h-40 xs:-ml-2 absolute z-10 mt-32 -ml-4 h-28 w-full overflow-x-hidden overflow-y-hidden will-change-transform [backface-visibility:hidden]">
+					<div className="drop-item absolute inset-0 [transform:translateZ(0)]">
+						<Image
+							src="/images/YDSqueezeBottle.png"
+							alt="Honey Squeeze Bottle"
+							fill
+							priority
+							className="object-contain -rotate-6"
+							onError={(e) => ((e.target as HTMLImageElement).style.display = 'none')}
+						/>
+					</div>
 				</div>
 
 				{/* Honey jar (item) */}
 				<div
 					data-speed="-0.1"
-					className="xs:h-52 xs:-ml-20 absolute z-10 mt-28 -ml-16 h-28 w-full  overflow-x-hidden overflow-y-hidden will-change-transform"
+					className="xs:h-52 xs:-ml-16 absolute z-10 mt-28 -ml-16 h-28 w-full  overflow-x-hidden overflow-y-hidden will-change-transform"
 				>
 					<div className="drop-item absolute inset-0 ">
 						<Image

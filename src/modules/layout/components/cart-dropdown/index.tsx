@@ -366,7 +366,9 @@ const CartDropdown = ({ cart: cartState }: { cart?: HttpTypes.StoreCart | null }
 						)}
 					>
 						<div className="flex flex-row justify-between items-center gap-4  -mt-3 mb-1">
-							<h3 className="text-base-semi font-normal text-center">Your Shopping Cart</h3>
+							<h3 className="text-2xl font-bold font-serif text-green-900 text-center">
+								Your Shopping Cart
+							</h3>
 							<button className="text-ui-fg-base" onClick={close} data-testid="close-cart-dropdown">
 								<XIcon size={16} />
 							</button>

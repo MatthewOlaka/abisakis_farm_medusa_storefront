@@ -24,6 +24,8 @@ const LineItemUnitPrice = ({ item, style = 'default', currencyCode }: LineItemUn
 							{convertToLocale({
 								amount: original_total / item.quantity,
 								currency_code: currencyCode,
+								minimumFractionDigits: 0,
+								maximumFractionDigits: 0,
 							})}
 						</span>
 					</p>
@@ -41,6 +43,8 @@ const LineItemUnitPrice = ({ item, style = 'default', currencyCode }: LineItemUn
 				{convertToLocale({
 					amount: total / item.quantity,
 					currency_code: currencyCode,
+					minimumFractionDigits: 0,
+					maximumFractionDigits: 0,
 				})}
 			</span>
 		</div>

@@ -14,20 +14,33 @@ export default function useParallax(rootRef?: RefObject<HTMLElement>, opts: Opts
 		const qsa = (sel: string) =>
 			Array.from((root as HTMLElement | Document).querySelectorAll<HTMLElement>(sel));
 
-		let nodes = qsa(selector);
-		if (!nodes.length) return;
+		type Entry = { el: HTMLElement; base: string };
+
+		let entries: Entry[] = qsa(selector).map((el) => {
+			// Preserve original transform once (scale/rotate/etc.) so we don't stack our own translate
+			const existing = getComputedStyle(el).transform;
+			const base =
+				el.dataset.parallaxBaseTransform ??
+				(existing === 'none' ? '' : existing);
+			// cache it to avoid reading a translate we applied earlier
+			if (!el.dataset.parallaxBaseTransform) {
+				el.dataset.parallaxBaseTransform = base;
+			}
+			return { el, base };
+		});
+		if (!entries.length) return;
 
 		// Render loop (RAF) so scroll work is cheap & smooth
 		let raf = 0;
 		const tick = () => {
 			const y = window.scrollY || 0;
 			const x = window.scrollX || 0;
-			for (const el of nodes) {
+			for (const { el, base } of entries) {
 				const speed = parseFloat(el.dataset.speed || '0');
 				const t =
 					axis === 'y' ? `translate3d(0, ${y * speed}px, 0)` : `translate3d(${x * speed}px, 0, 0)`;
-				// only touch transform to avoid clobbering other styles
-				el.style.transform = t;
+				// append to the existing transform so scale/rotate classes remain intact
+				el.style.transform = `${base ? `${base} ` : ''}${t}`;
 				el.style.willChange = 'transform';
 			}
 		};
@@ -38,7 +51,16 @@ export default function useParallax(rootRef?: RefObject<HTMLElement>, opts: Opts
 
 		// Re-measure/rebind helper (for refresh, image load, resize)
 		const rebind = () => {
-			nodes = qsa(selector);
+			entries = qsa(selector).map((el) => {
+				const existing = getComputedStyle(el).transform;
+				const base =
+					el.dataset.parallaxBaseTransform ??
+					(existing === 'none' ? '' : existing);
+				if (!el.dataset.parallaxBaseTransform) {
+					el.dataset.parallaxBaseTransform = base;
+				}
+				return { el, base };
+			});
 			onScroll(); // draw once
 		};
 
