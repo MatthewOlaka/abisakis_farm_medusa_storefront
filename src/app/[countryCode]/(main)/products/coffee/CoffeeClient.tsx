@@ -93,17 +93,29 @@ export default function CoffeeClient({ featured }: { featured: React.ReactNode }
 	const mugWrapRef = useRef<HTMLDivElement | null>(null);
 	const bean1WrapRef = useRef<HTMLDivElement | null>(null);
 	const bean2WrapRef = useRef<HTMLDivElement | null>(null);
-	const bean3WrapRef = useRef<HTMLDivElement | null>(null);
-	const scopeRef = useRef<HTMLDivElement | null>(null);
+	const scopeRef = useRef<HTMLElement | null>(null);
 	const varietyStripRef = useRef<HTMLDivElement | null>(null);
 	const varietyStepRef = useRef<number>(0);
 	const varietyWheelLockRef = useRef(false);
 	const [canPrevVariety, setCanPrevVariety] = useState(false);
 	const [canNextVariety, setCanNextVariety] = useState(true);
+	const [isSmallScreen, setIsSmallScreen] = useState(false);
 
 	const pipeStarted = useRef(false);
 
 	useParallax(scopeRef, { selector: '[data-speed]', axis: 'y' });
+
+	useEffect(() => {
+		const mediaQuery = window.matchMedia('(max-width: 479px)');
+		const updateViewport = () => setIsSmallScreen(mediaQuery.matches);
+
+		updateViewport();
+		mediaQuery.addEventListener('change', updateViewport);
+
+		return () => {
+			mediaQuery.removeEventListener('change', updateViewport);
+		};
+	}, []);
 
 	const scrollVarieties = useCallback((dir: 'left' | 'right', opts?: { lock?: boolean }) => {
 		const el = varietyStripRef.current;
@@ -192,7 +204,10 @@ export default function CoffeeClient({ featured }: { featured: React.ReactNode }
 			!bean2WrapRef.current
 		)
 			return;
+
 		const mm = gsap.matchMedia();
+		const povTweens: gsap.core.Tween[] = [];
+		const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 
 		mm.add('(max-width: 479px)', () => {
 			gsap.set(bagWrapRef.current, {
@@ -212,7 +227,7 @@ export default function CoffeeClient({ featured }: { featured: React.ReactNode }
 				scrollTrigger: {
 					trigger: document.documentElement,
 					start: 0,
-					end: '+=50%',
+					end: '+=70%',
 					scrub: 0.6,
 					fastScrollEnd: true,
 					onLeave: () => {
@@ -230,7 +245,7 @@ export default function CoffeeClient({ featured }: { featured: React.ReactNode }
 			});
 
 			tl2.to(bagWrapRef.current, {
-				y: () => window.innerHeight * 0.5,
+				y: () => window.innerHeight * 0.7,
 				rotation: 0,
 				rotateX: 0,
 				x: 0,
@@ -286,18 +301,6 @@ export default function CoffeeClient({ featured }: { featured: React.ReactNode }
 				rotateX: 0,
 				x: -45,
 				y: '1vh',
-				scale: 1,
-				transformOrigin: '50% 85%',
-				transformPerspective: 800,
-				force3D: true,
-				z: 0.01,
-				willChange: 'transform',
-			});
-			gsap.set(bean3WrapRef.current, {
-				rotation: 150,
-				rotateX: 0,
-				x: -45,
-				y: 0,
 				scale: 1,
 				transformOrigin: '50% 85%',
 				transformPerspective: 800,
@@ -376,18 +379,6 @@ export default function CoffeeClient({ featured }: { featured: React.ReactNode }
 							duration: 1,
 						},
 						'sync',
-					)
-					.to(
-						bean3WrapRef.current,
-						{
-							y: () => window.innerHeight * 0.76,
-							rotation: -100,
-							rotateX: 0,
-							x: -40,
-							scale: 1,
-							duration: 1,
-						},
-						'sync',
 					);
 				return () => {
 					tl?.scrollTrigger?.kill();
@@ -395,6 +386,44 @@ export default function CoffeeClient({ featured }: { featured: React.ReactNode }
 				};
 			}
 		});
+
+		if (!prefersReducedMotion) {
+			const povImages = Array.from(
+				scopeRef.current?.querySelectorAll<HTMLElement>('[data-pov-image]') ?? [],
+			);
+
+			if (povImages.length > 0) {
+				gsap.set(povImages, {
+					autoAlpha: 0,
+					y: 24,
+					willChange: 'transform, opacity',
+				});
+
+				povImages.forEach((povImage) => {
+					const tween = gsap.to(povImage, {
+						autoAlpha: 1,
+						y: 0,
+						duration: 0.8,
+						ease: 'power2.out',
+						scrollTrigger: {
+							trigger: povImage,
+							start: 'top 30%',
+							once: true,
+						},
+					});
+
+					povTweens.push(tween);
+				});
+			}
+		}
+
+		return () => {
+			mm.revert();
+			povTweens.forEach((tween) => {
+				tween.scrollTrigger?.kill();
+				tween.kill();
+			});
+		};
 	}, []);
 
 	return (
@@ -409,6 +438,7 @@ export default function CoffeeClient({ featured }: { featured: React.ReactNode }
 									alt="Cherry"
 									fill
 									priority
+									sizes="(max-width: 768px) 40px, 60px"
 									className="object-cover"
 									onError={(e) => ((e.target as HTMLImageElement).style.display = 'none')}
 								/>
@@ -424,6 +454,7 @@ export default function CoffeeClient({ featured }: { featured: React.ReactNode }
 									alt="Roasted beans"
 									fill
 									priority
+									sizes="(max-width: 768px) 80px, 120px"
 									className="object-cover"
 									onError={(e) => ((e.target as HTMLImageElement).style.display = 'none')}
 								/>
@@ -433,7 +464,7 @@ export default function CoffeeClient({ featured }: { featured: React.ReactNode }
 				</div>
 			</div>
 			<div className="relative">
-				<div className="absolute hidden md:block mt-[40vh] left-1/2 -translate-x-1/2">
+				<div className="absolute scale-75 md:scale-100 mt-[50vh] xs:mt-[40vh] left-1/2 -translate-x-1/2">
 					<ScrollDownIndicator className="mx-auto mt-8 sm:mt-10" />
 				</div>
 				<div className="absolute left-1/2 z-1 mt-[40vh] md:mt-[55vh] w-full -translate-x-1/2 text-center">
@@ -455,6 +486,7 @@ export default function CoffeeClient({ featured }: { featured: React.ReactNode }
 						alt="Coffee Mug"
 						fill
 						priority
+						sizes="(max-width: 768px) 100vw, 896px"
 						className="object-contain"
 						onError={(e) => ((e.target as HTMLImageElement).style.display = 'none')}
 					/>
@@ -468,7 +500,8 @@ export default function CoffeeClient({ featured }: { featured: React.ReactNode }
 							src="/images/coffeeBean.png"
 							alt="Coffee Bean 1"
 							fill
-							priority
+							loading="lazy"
+							sizes="24px"
 							className="object-contain"
 							onError={(e) => ((e.target as HTMLImageElement).style.display = 'none')}
 						/>
@@ -483,7 +516,8 @@ export default function CoffeeClient({ featured }: { featured: React.ReactNode }
 							src="/images/coffeeBean.png"
 							alt="Coffee Bean 2"
 							fill
-							priority
+							loading="lazy"
+							sizes="24px"
 							className="object-contain"
 							onError={(e) => ((e.target as HTMLImageElement).style.display = 'none')}
 						/>
@@ -498,6 +532,7 @@ export default function CoffeeClient({ featured }: { featured: React.ReactNode }
 						alt="Open Coffee Bag"
 						fill
 						priority
+						sizes="(max-width: 768px) 100vw, 896px"
 						className="object-contain"
 						onError={(e) => ((e.target as HTMLImageElement).style.display = 'none')}
 					/>
@@ -508,7 +543,8 @@ export default function CoffeeClient({ featured }: { featured: React.ReactNode }
 					src="/images/cherry.png"
 					alt="Cherry 1"
 					fill
-					priority
+					loading="lazy"
+					sizes="(max-width: 768px) 40px, 56px"
 					className="object-contain"
 					onError={(e) => ((e.target as HTMLImageElement).style.display = 'none')}
 				/>
@@ -521,82 +557,122 @@ export default function CoffeeClient({ featured }: { featured: React.ReactNode }
 					src="/images/cherry.png"
 					alt="Cherry 2"
 					fill
-					priority
+					loading="lazy"
+					sizes="(max-width: 768px) 40px, 52px"
 					className="object-contain"
 					onError={(e) => ((e.target as HTMLImageElement).style.display = 'none')}
 				/>
 			</div>
-
-			<div className="relative top-[65vh] md:top-[70vh]">
+			{/* Content sections */}
+			{/* <div className="relative top-[65vh] md:top-[80vh]"> */}
+			<div className="mt-[70vh]">
+				<div
+					data-pov-image
+					className="md:block hidden h-72 w-52 xl:h-80 xl:w-60 absolute z-50 -rotate-3 -ml-64 lg:-ml-96 mt-[55vh] left-1/2 -translate-x-1/2"
+				>
+					<Image
+						src="/images/POV.jpg"
+						alt="POV"
+						fill
+						loading="lazy"
+						sizes="240px"
+						className="rounded-sm object-cover"
+						onError={(e) => ((e.target as HTMLImageElement).style.display = 'none')}
+					/>
+				</div>
+				<div
+					data-pov-image
+					className="md:block hidden h-72 w-52 xl:h-80 xl:w-60 absolute z-50 rotate-3 mt-[95vh] ml-64 lg:ml-96 left-1/2 -translate-x-1/2"
+				>
+					<Image
+						src="/images/POV.jpg"
+						alt="POV"
+						fill
+						loading="lazy"
+						sizes="240px"
+						className="rounded-sm object-cover"
+						onError={(e) => ((e.target as HTMLImageElement).style.display = 'none')}
+					/>
+				</div>
+				<div
+					data-pov-image
+					className="md:block hidden h-72 w-52 xl:h-80 xl:w-60 absolute z-50 -rotate-3 -ml-64 lg:-ml-96 mt-[130vh] left-1/2 -translate-x-1/2"
+				>
+					<Image
+						src="/images/POV.jpg"
+						alt="POV"
+						fill
+						loading="lazy"
+						sizes="240px"
+						className="rounded-sm object-cover"
+						onError={(e) => ((e.target as HTMLImageElement).style.display = 'none')}
+					/>
+				</div>
+				<div
+					data-pov-image
+					className="md:block hidden h-72 w-52 xl:h-80 xl:w-60 absolute z-50 rotate-3 mt-[165vh] ml-64 lg:ml-96 left-1/2 -translate-x-1/2"
+				>
+					<Image
+						src="/images/POV.jpg"
+						alt="POV"
+						fill
+						loading="lazy"
+						sizes="240px"
+						className="rounded-sm object-cover"
+						onError={(e) => ((e.target as HTMLImageElement).style.display = 'none')}
+					/>
+				</div>
+				{/* <TimelineText
+					idx="01"
+					title="Nurture the bees"
+					description="Our hives are cared for with patience and respect. Bees are part of the land, not just workers, and we ensure they thrive naturally."
+					className="xs:mt-[62vh] xs:ml-20 left-1/2 mt-[65vh] -translate-x-1/2"
+				/> */}
 				<TimelineText
 					idx="01"
-					title="Lorem Ipsum"
-					description="Lorem ipsum dolor sit amet consectetur adipisicing elit. Incidunt quos
-					aliquid,Incidunt quos aliquid quos aliquid,Incidunt quos aliquid ipsum
-					dolor sit amet."
-					className="xs:mt-[62vh] xs:ml-20 left-1/2 mt-[35vh] ml-5 -translate-x-1/2"
+					title="Grow with purpose"
+					description="Our land offers cool air, rich soil, and steady rains. We give each crop the time it needs, because strong roots and careful tending are where great flavour begins."
+					className="xs:mt-[62vh] xs:ml-20 left-1/2 mt-[58vh] ml-8 -translate-x-1/2"
 				/>
 				<TimelineText
 					idx="02"
-					title="Lorem Ipsum"
-					description="Lorem ipsum dolor sit amet consectetur adipisicing elit. Incidunt quos
-					aliquid,Incidunt quos aliquid quos aliquid,Incidunt quos aliquid ipsum
-					dolor sit amet."
-					className="xs:mt-[98vh] xs:-ml-20 left-1/2 mt-[70vh] -translate-x-1/2"
+					title="Harvest Carefully"
+					description="We pick only when nature says it’s time. Each fruit is selected with care, ensuring ripeness, quality, and respect for the work that brought it this far."
+					className="xs:mt-[98vh] xs:-ml-20 left-1/2 mt-[90vh] -ml-8 -translate-x-1/2"
 				/>
 
 				<TimelineText
 					idx="03"
-					title="Lorem Ipsum"
-					description="Lorem ipsum dolor sit amet consectetur adipisicing elit. Incidunt quos
-					aliquid,Incidunt quos aliquid quos aliquid,Incidunt quos aliquid ipsum
-					dolor sit amet."
-					className="xs:mt-[132vh] xs:ml-20 left-1/2 mt-[105vh] -translate-x-1/2"
+					title="Process by variety"
+					description="How we process depends on the variety. Whether dried, washed, or carefully fermented, each method is chosen to highlight the character and natural profile of the crop."
+					className="xs:mt-[132vh] xs:ml-20 left-1/2 mt-[129vh] ml-8 -translate-x-1/2"
 				/>
 				<TimelineText
 					idx="04"
-					title="Lorem Ipsum"
-					description="Lorem ipsum dolor sit amet consectetur adipisicing elit. Incidunt quos
-					aliquid,Incidunt quos aliquid quos aliquid,Incidunt quos aliquid ipsum
-					dolor sit amet."
-					className="xs:mt-[169vh] xs:-ml-20 left-1/2 mt-[140vh] -translate-x-1/2"
+					title="Roast and enjoy"
+					description="Every cup reflects the soil, the season, and the hands behind it. It’s meant to be savoured... a reminder that the best things are grown with patience and care."
+					className="xs:mt-[169vh] xs:-ml-20 left-1/2 mt-[162vh] -ml-8  -translate-x-1/2"
 				/>
-				<div className="overflox-x-hidden xs:hidden mt-10">
+				<div className={`overflox-x-hidden ${isSmallScreen ? 'mt-10' : ''}`}>
 					<CurvyScrollPipe
 						active={true}
 						d="M1933.316,1529.3s11.654,118.137,0,123.155c-108.008,46.5-810.076,301.466-810.076,628.968,0,362.28,233.438,486.332,689.425,809.241s913.482,424.424,913.482,842.722-428.06,499.133-913.482,830.468-689.425,446.455-689.425,819.938,689.425,673.992,689.425,673.992,913.482,405.6,913.482,859.809c0,408.791-752.338,839.488-863.839,962.333-84.4,87.522-33.129,388.875-36.129,492.731"
 						viewBox="0 0 1603.907 7083.421"
 						pathTransform="translate(-1122.74 -1529.252)"
-						strokeWidth={22}
+						strokeWidth={isSmallScreen ? 22 : 25}
 						strokeLinecap="round"
 						startColor="#bb0f0f"
 						endColor="#2E5604"
 						trackColor="#BECFAD"
-						minHeightVh={200}
-						svgHeightVh={160}
-						preserveAspect="xMidYMin meet"
-						dialLead={15}
-					/>
-				</div>
-				<div className="overflox-x-hidden xs:block hidden">
-					<CurvyScrollPipe
-						active={true}
-						d="M1933.316,1529.3s11.654,118.137,0,123.155c-108.008,46.5-810.076,301.466-810.076,628.968,0,362.28,233.438,486.332,689.425,809.241s913.482,424.424,913.482,842.722-428.06,499.133-913.482,830.468-689.425,446.455-689.425,819.938,689.425,673.992,689.425,673.992,913.482,405.6,913.482,859.809c0,408.791-752.338,839.488-863.839,962.333-84.4,87.522-33.129,388.875-36.129,492.731"
-						viewBox="0 0 1603.907 7083.421"
-						pathTransform="translate(-1122.74 -1529.252)"
-						strokeWidth={25}
-						strokeLinecap="round"
-						startColor="#bb0f0f"
-						endColor="#2E5604"
-						trackColor="#BECFAD"
-						minHeightVh={260}
+						minHeightVh={isSmallScreen ? 240 : 260}
 						svgHeightVh={160}
 						preserveAspect="xMidYMin meet"
 						dialLead={15}
 					/>
 				</div>
 			</div>
-			<div className="xs:mt-72 relative mt-[480px] h-full overflow-hidden">
+			{/* <div className="xs:mt-72 relative mt-[480px] h-full overflow-hidden"> */}
+			<div className="relative h-full overflow-hidden -mt-56 xs:-mt-96">
 				<ImageCarousel title="Our Techniques" slides={slides} />
 			</div>
 
@@ -689,7 +765,7 @@ export default function CoffeeClient({ featured }: { featured: React.ReactNode }
 
 			{featured}
 
-			<div className="overflox-x-hidden xs:py-52 flex w-full justify-center px-10 py-30">
+			<div className="overflox-x-hidden xs:py-52 flex w-full justify-center px-10 py-28">
 				<ExploreProductsBanner />
 			</div>
 		</section>

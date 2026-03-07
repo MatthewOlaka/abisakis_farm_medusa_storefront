@@ -2,7 +2,7 @@
 'use client';
 
 import { gsap } from 'gsap';
-import { useLayoutEffect, useRef } from 'react';
+import { useId, useLayoutEffect, useRef } from 'react';
 
 type Dir = 'left' | 'right';
 
@@ -25,6 +25,7 @@ export default function CurvyMarqueeText({
 	curveHeight = 60,
 	stroke,
 }: Props) {
+	const pathId = useId().replace(/:/g, '');
 	const pathRef = useRef<SVGPathElement | null>(null);
 	const textPathRef = useRef<SVGTextPathElement | null>(null);
 
@@ -82,7 +83,7 @@ export default function CurvyMarqueeText({
 			>
 				<path
 					ref={pathRef}
-					id="curvy-marquee-path"
+					id={pathId}
 					d={d}
 					fill="none"
 					stroke={stroke ?? 'transparent'}
@@ -96,7 +97,7 @@ export default function CurvyMarqueeText({
 				>
 					<textPath
 						ref={textPathRef}
-						href="#curvy-marquee-path"
+						href={`#${pathId}`}
 						// Start the text centered on the first curve visually:
 						startOffset="0%"
 						// Keep glyphs nicely spaced regardless of repeats

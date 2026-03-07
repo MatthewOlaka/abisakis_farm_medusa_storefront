@@ -4,6 +4,7 @@ import useParallax from '@lib/hooks/useParallax';
 import BlobText from '@modules/common/components/blob-text';
 import MapCard from '@modules/common/components/map-card';
 import ProductCard from '@modules/common/components/product-card';
+import ScrollDownIndicator from '@modules/common/components/scroll-down-indicator';
 import Title from '@modules/common/components/title';
 import { gsap } from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
@@ -24,6 +25,8 @@ const MAP_PERIMETER = [
 	{ lat: 0.9918, lng: 35.1339 },
 	{ lat: 0.9915, lng: 35.1312 },
 ];
+const MOM_LANDING_IMAGE_URL =
+	'https://devhzevghepeeyjlabdc.supabase.co/storage/v1/object/public/public-site/landing/momLanding.jpeg';
 const MAP_MARKERS = [
 	{
 		title: 'Bee hives',
@@ -89,24 +92,35 @@ const Landing = () => {
 	const sectionRef = useRef<HTMLDivElement | null>(null);
 	const contentSectionRef = useRef<HTMLDivElement | null>(null);
 	const wrapRef = useRef<HTMLDivElement | null>(null); // animated width/scale/y
+	const heroContainerRef = useRef<HTMLDivElement | null>(null); // hero trigger point
 	//TODO: is imgRef needed?
 	const imgRef = useRef<HTMLImageElement | null>(null); // animate brightness
 	const overlayRef = useRef<HTMLDivElement | null>(null); // fades in later
 	const ctaRef = useRef<HTMLDivElement | null>(null); // CTA fades in later
-	const heroText1Ref = useRef<HTMLDivElement | null>(null); // text above the hero
-	const heroText1MobileRef = useRef<HTMLDivElement | null>(null); // text above the hero (mobile)
-	const heroText2Ref = useRef<HTMLDivElement | null>(null); // text inside the image
+	// const heroText1Ref = useRef<HTMLDivElement | null>(null); // text above the hero
+	// const heroText1MobileRef = useRef<HTMLDivElement | null>(null); // text above the hero (mobile)
+	// const heroText2Ref = useRef<HTMLDivElement | null>(null); // text inside the image
 	const stickyRef = useRef<HTMLDivElement | null>(null);
 	const pathRef = useRef<SVGPathElement | null>(null);
 	const mapSectionRef = useRef<HTMLDivElement | null>(null);
 	const flagSvgRef = useRef<SVGSVGElement | null>(null);
 
+	// Refs for the stats cards (30+ acres, 1900m elevation, 100% farm fresh)
+	const acresCardRef = useRef<HTMLDivElement | null>(null);
+	const elevationCardRef = useRef<HTMLDivElement | null>(null);
+	const farmFreshCardRef1 = useRef<HTMLDivElement | null>(null);
+	const farmFreshCardRef2 = useRef<HTMLDivElement | null>(null);
+
+	// Refs for lower-section image reveals
+	const momLandingImageRef = useRef<HTMLDivElement | null>(null);
+	const povImageRef = useRef<HTMLDivElement | null>(null);
+	const flowerImageRef = useRef<HTMLDivElement | null>(null);
+	const beeOneRef = useRef<HTMLDivElement | null>(null);
+	const beeTwoRef = useRef<HTMLDivElement | null>(null);
+
 	// helpers
-	const vhPx = (n: number) => () => window.innerHeight * (n / 100);
-	// return a proper "+=<number>" string (not "+=" + function)
-	const vhAdd = (n: number) => () => `+=${window.innerHeight * (n / 100)}`;
-	// recompute end each refresh in absolute page pixels
-	const preEnd = () => (sectionRef.current?.getBoundingClientRect().top ?? 0) + window.scrollY;
+	const _vhAdd = (n: number) => () => `+=${window.innerHeight * (n / 100)}`;
+	const _preEnd = () => (sectionRef.current?.getBoundingClientRect().top ?? 0) + window.scrollY;
 
 	useParallax(contentSectionRef, { selector: '[data-speed]', axis: 'y' });
 
@@ -117,139 +131,112 @@ const Landing = () => {
 			// let drawTl: GSAPTimeline | null = null; // keep your map timeline var
 
 			// --- MOBILE: snap straight to final ---
-			mm.add('(max-width: 767px)', () => {
-				if (
-					!wrapRef.current ||
-					!overlayRef.current ||
-					!ctaRef.current ||
-					!heroText1Ref.current ||
-					!heroText2Ref.current
-				)
-					return;
+			// mm.add('(max-width: 767px)', () => {
+			// 	if (
+			// 		!wrapRef.current ||
+			// 		!overlayRef.current ||
+			// 		!ctaRef.current ||
+			// 		!heroText1Ref.current ||
+			// 		!heroText2Ref.current
+			// 	)
+			// 		return;
 
-				gsap.set(wrapRef.current, {
-					// keep width fixed; transforms only
-					scale: 1,
-					y: 0,
-					xPercent: 0,
-					transformPerspective: 800,
-					force3D: true,
-					z: 0.01,
-					willChange: 'transform',
-				});
-				gsap.set(overlayRef.current, { opacity: 0.45 });
-				gsap.set(ctaRef.current, { opacity: 1, y: 0, pointerEvents: 'auto' });
-				gsap.set(heroText1Ref.current, { autoAlpha: 0 });
-				gsap.set(heroText1MobileRef.current, { opacity: 0 });
-				gsap.set(heroText2Ref.current, { y: '22vh', opacity: 1 });
-			});
+			// 	gsap.set(wrapRef.current, {
+			// 		// keep width fixed; transforms only
+			// 		scale: 1,
+			// 		y: 0,
+			// 		xPercent: 0,
+			// 		transformPerspective: 800,
+			// 		force3D: true,
+			// 		z: 0.01,
+			// 		willChange: 'transform',
+			// 	});
+			// 	gsap.set(overlayRef.current, { opacity: 0.45 });
+			// 	gsap.set(ctaRef.current, { opacity: 1, y: 0, pointerEvents: 'auto' });
+			// 	gsap.set(heroText1Ref.current, { autoAlpha: 0 });
+			// 	gsap.set(heroText1MobileRef.current, { opacity: 0 });
+			// 	gsap.set(heroText2Ref.current, { y: '22vh', opacity: 1 });
+			// });
 
 			// --- DESKTOP: smooth pinned scene ---
-			mm.add('(min-width: 768px)', () => {
-				if (
-					!sectionRef.current ||
-					!wrapRef.current ||
-					!overlayRef.current ||
-					!ctaRef.current ||
-					!heroText1Ref.current ||
-					!heroText2Ref.current
-				)
+			mm.add('(min-width: 1px)', () => {
+				if (!heroContainerRef.current || !wrapRef.current || !overlayRef.current || !ctaRef.current)
 					return;
 
-				// Initial states
+				// Initial states - start at normal size
 				gsap.set(wrapRef.current, {
-					// Keep width static (100vw via CSS). Animate only transforms.
-					scale: 0.75,
-					y: 0,
-					xPercent: 0,
-					transformOrigin: '50% 50%',
-					transformPerspective: 800,
-					force3D: true,
-					z: 0.01,
-					willChange: 'transform',
+					// width: 500,
+					// height: 200,
+					position: 'relative',
+					left: 'auto',
+					top: 'auto',
 				});
 				gsap.set(overlayRef.current, { opacity: 0 });
 				gsap.set(ctaRef.current, { opacity: 0, y: 24, pointerEvents: 'none' });
-				gsap.set(heroText1Ref.current, {
-					y: 0,
-					opacity: 1,
-					willChange: 'transform',
-				});
-				const INSIDE_START_Y_VH = -28.5;
-				gsap.set(heroText2Ref.current, {
-					y: `${INSIDE_START_Y_VH}vh`,
-					opacity: 1,
-				});
 
-				// Initial states (add xPercent so GSAP keeps the horizontal centering)
-				gsap.set(heroText1Ref.current, { y: 0, xPercent: -50, opacity: 1 });
-				gsap.set(heroText2Ref.current, {
-					y: `${INSIDE_START_Y_VH}vh`,
-					opacity: 1,
-				});
-
-				// PRE-TIMELINE: move both texts down before the hero pins
-				const pre = gsap.timeline({
-					scrollTrigger: {
-						trigger: document.documentElement,
-						start: 'top top',
-						end: preEnd, // <— function, recalculated on refresh
-						scrub: 0.6,
-						fastScrollEnd: true,
-						invalidateOnRefresh: true,
-						// markers: true,            // uncomment to debug
-					},
-					defaults: { ease: 'none' },
-				});
-
-				// IMPORTANT: use a function that returns a valid value (number or "+=<num>")
-				pre.to([heroText1Ref.current, heroText2Ref.current], { y: vhAdd(50) }, 0);
-
-				// MAIN PINNED SCENE
+				// MAIN PINNED SCENE - expands hero to fullscreen
 				const tl = gsap.timeline({
 					scrollTrigger: {
-						trigger: sectionRef.current,
-						start: 'top top',
-						end: '+=20%',
+						trigger: heroContainerRef.current,
+						start: 'top center',
+						end: '+=800vh',
 						pin: true,
 						pinSpacing: true,
-						scrub: 0.6,
-						anticipatePin: 1,
+						scrub: 1.5,
 						fastScrollEnd: true,
 						invalidateOnRefresh: true,
 					},
 					defaults: { ease: 'none' },
 				});
 
-				tl.to(heroText1Ref.current, { y: vhPx(22) }, 0)
-					// .to(heroText2Ref.current, { y: vhPx(22) }, 0)
-					.set(heroText1Ref.current, { autoAlpha: 0 }, 0.95)
-					.to(wrapRef.current, { scale: 1, y: 0 }, 0)
-					.to(overlayRef.current, { opacity: 0.6, duration: 0.4 }, 0)
-					.to(heroText1Ref.current, { opacity: 0 }, 1)
-					// .to(heroText1MobileRef.current, { opacity: 0, duration: 0.3 }, 0)
+				// Pre-animate: move to center before expansion starts (duration 0)
+				tl.to(
+					wrapRef.current,
+					{
+						position: 'fixed',
+						top: '50%',
+						left: '50%',
+						xPercent: -50,
+						yPercent: -50,
+						duration: 0,
+					},
+					0,
+				)
+					// Then: expand to fullscreen from center (0 to 0.7)
+					.to(
+						wrapRef.current,
+						{
+							width: '100vw',
+							height: '110vh',
+							duration: 0.7,
+						},
+						0,
+					)
+					.to(overlayRef.current, { opacity: 0.6, duration: 0.7 }, 0)
+					// Second: fade in CTA after image expansion (starting at 0.7)
 					.to(
 						ctaRef.current,
 						{
 							opacity: 1,
 							y: 0,
 							pointerEvents: 'auto',
-							duration: 0.45,
+							duration: 1,
 							ease: 'power2.out',
 						},
-						0,
+						0.7,
 					);
 
 				return () => {
 					tl.scrollTrigger?.kill();
 					tl.kill();
-					pre.scrollTrigger?.kill();
-					pre.kill();
 				};
-			});
-
-			// Your map draw timeline can stay (or leave as you had it)
+			}); // Your map draw timeline can stay (or leave as you had it)
 			if (mapSectionRef.current && stickyRef.current && pathRef.current) {
+				const MAP_DRAW_SCROLL_DISTANCE_PX = 1100;
+				const MAP_PIN_SCROLL_DISTANCE_PX = 660;
+				const MAP_DRAW_START = 'top 55%';
+				//not top top because i want some padding cause of nav bar
+				const MAP_PIN_START = 'top 3%';
 				const len = pathRef.current.getTotalLength();
 				gsap.set(pathRef.current, {
 					strokeDasharray: len,
@@ -261,10 +248,11 @@ const Landing = () => {
 				gsap
 					.timeline({
 						scrollTrigger: {
-							trigger: mapSectionRef.current,
-							start: 'top 50%',
-							end: '+=180%',
+							trigger: stickyRef.current,
+							start: MAP_DRAW_START,
+							end: `+=${MAP_DRAW_SCROLL_DISTANCE_PX}`,
 							scrub: 0.6,
+							invalidateOnRefresh: true,
 						},
 						defaults: { ease: 'none' },
 					})
@@ -274,12 +262,89 @@ const Landing = () => {
 
 				ScrollTrigger.create({
 					trigger: stickyRef.current,
-					start: 'top top',
-					end: '+=100%',
+					start: MAP_PIN_START,
+					end: `+=${MAP_PIN_SCROLL_DISTANCE_PX}`,
 					pin: true,
-					pinSpacing: false,
+					pinSpacing: true,
+					invalidateOnRefresh: true,
 				});
 			}
+
+			// Animate the stats cards (30+ acres, 1900m elevation, 100% farm fresh) on scroll
+			if (
+				acresCardRef.current &&
+				elevationCardRef.current &&
+				farmFreshCardRef1.current &&
+				farmFreshCardRef2
+			) {
+				// Set initial state
+				gsap.set(
+					[
+						acresCardRef.current,
+						elevationCardRef.current,
+						farmFreshCardRef1.current,
+						farmFreshCardRef2.current,
+					],
+					{
+						opacity: 0,
+						y: 30,
+					},
+				);
+
+				// Create animation timeline
+				gsap
+					.timeline({
+						scrollTrigger: {
+							trigger: acresCardRef.current,
+							start: 'top 80%',
+							end: 'top 20%',
+							scrub: false,
+						},
+					})
+					.to(acresCardRef.current, { opacity: 1, y: 0, duration: 0.6, ease: 'power2.out' }, 0)
+					.to(
+						elevationCardRef.current,
+						{ opacity: 1, y: 0, duration: 0.6, ease: 'power2.out' },
+						0.1,
+					)
+					.to(
+						farmFreshCardRef1.current,
+						{ opacity: 1, y: 0, duration: 0.6, ease: 'power2.out' },
+						0.2,
+					)
+					.to(
+						farmFreshCardRef2.current,
+						{ opacity: 1, y: 0, duration: 0.6, ease: 'power2.out' },
+						0.2,
+					);
+			}
+
+			const lowerRevealTargets = [
+				{ element: momLandingImageRef.current, delay: 0, y: 100 },
+				{ element: povImageRef.current, delay: 0, y: 100 },
+				{ element: flowerImageRef.current, delay: 0, y: 30 },
+				{ element: beeOneRef.current, delay: 0.1, y: 0 },
+				{ element: beeTwoRef.current, delay: 0.15, y: 0 },
+			];
+
+			lowerRevealTargets.forEach(({ element, delay, y }) => {
+				if (!element) return;
+
+				gsap.set(element, { opacity: 0, y });
+				gsap.to(element, {
+					opacity: 1,
+					y: 0,
+					duration: 0.6,
+					ease: 'power2.out',
+					delay,
+					scrollTrigger: {
+						trigger: element,
+						start: 'top 65%',
+						end: 'top 20%',
+						scrub: false,
+					},
+				});
+			});
 
 			ScrollTrigger.refresh();
 		});
@@ -289,131 +354,166 @@ const Landing = () => {
 		};
 	}, []);
 
-	// const onSubmit: React.FormEventHandler<HTMLFormElement> = (e) => {
-	// 	e.preventDefault();
-	// 	const form = new FormData(e.currentTarget);
-	// 	const email = form.get('email') as string;
-	// 	console.log('subscribe:', email);
-	// };
-
 	return (
-		<section className="overflow-x-hidden">
+		<section className="overflow-x-hidden ">
 			{/* <div className="h-60 w-full bg-amber-500"></div> */}
-			<div className="h-0 w-full md:h-60"></div>
-			<div
-				ref={heroText1Ref}
-				className="pointer-events-none fixed top-20 left-1/2 z-10 hidden w-[250px] -translate-x-1/2 pt-12 text-center select-none md:ml-2 md:block md:w-[480px]"
-			>
-				<h1 className="font-sans text-sm text-green-900 md:text-xl">Where soil meets the soul</h1>
-				<h2 className="mt-2 font-serif text-5xl font-bold text-green-900 md:text-6xl">
-					Nurturing life <br /> with every season
-				</h2>
-			</div>
-
-			{/* Pinned hero area */}
-			<div ref={sectionRef} className="relative z-[100]">
-				<div className="relative h-[110vh] w-screen overflow-hidden">
-					{/* Animated wrapper: starts narrow, centers, then fills 100vw */}
-					{/* <div
-						ref={wrapRef}
-						className="relative mx-auto h-[110vh]"
-						style={{ willChange: 'transform,width' }}
-					> */}
+			<div className="h-10 w-full md:h-20 "></div>
+			<div className="flex flex-col items-center w-full px-2">
+				<div className="bg-yellow-200 flex items-center text-center w-full justify-center font-bold font-serif text-7xl xs:text-[120px] md:text-[150px]  text-green-900 uppercase p-10 max-w-6xl rounded-3xl tracking-tighter leading-[60px] xs:leading-[110px]">
+					<h1 className="z-10">
+						Abisaki&rsquo;s <br /> farm
+					</h1>
+				</div>
+				<div className="flex">
+					<div className="-mt-24 xs:-mt-40 h-40 right-[120px] xs:h-52 md:h-64 xs:right-48 md:right-60 absolute z-10 w-full will-change-transform">
+						<Image
+							src="/images/honeyJar1.png"
+							alt="Honey Jar"
+							fill
+							priority
+							className="object-contain -rotate-12"
+							onError={(e) => ((e.target as HTMLImageElement).style.display = 'none')}
+						/>
+					</div>
+					<div className="-mt-14 xs:-mt-16 md:-mt-14 h-16 xs:h-20 md:h-24 right-2 md:right-0 absolute w-full will-change-transform">
+						<Image
+							src="/images/chilli.png"
+							alt="Chilli"
+							fill
+							priority
+							className="object-contain rotate-12"
+							onError={(e) => ((e.target as HTMLImageElement).style.display = 'none')}
+						/>
+					</div>
+					<div className="-mt-32 xs:-mt-44 md:-mt-48 h-56 w-32 ml-64 xs:h-56 md:h-72 xs:w-60 xs:ml-[400px] md:ml-[500px] z-10 will-change-transform overflow-x-clip">
+						<Image
+							src="/images/YDcoffeeBag1.png"
+							alt="Coffee Bag"
+							fill
+							priority
+							className="object-contain rotate-12 mr-96"
+							onError={(e) => ((e.target as HTMLImageElement).style.display = 'none')}
+						/>
+					</div>
+				</div>
+				<div className="mt-4 md:mt-36">
+					<p className="text-center text-green-900 font-serif text-2xl md:text-4xl leading-tight font-bold">
+						Nurturing nature&rsquo;s gift of life as
+						<br /> each new season unfolds
+					</p>
+				</div>
+				<div className="flex w-full justify-center">
+					<div className="motion-safe:animate-levitate mt-5 md:mt-10 mr-72 md:mr-[650px] absolute h-10 w-10 md:w-16 md:h-16 will-change-transform">
+						<Image
+							src="/images/bee.png"
+							alt="Bee 1"
+							fill
+							priority
+							className="object-cover"
+							onError={(e) => ((e.target as HTMLImageElement).style.display = 'none')}
+						/>
+					</div>
+					{/* <p>Bar</p> */}
+					<div
+						className="motion-safe:animate-levitate ml-64 md:ml-[750px] -mt-20 absolute h-10 w-10 md:h-16 md:w-16 will-change-transform"
+						style={{ animationDelay: '0.5s' }}
+					>
+						<Image
+							src="/images/bee.png"
+							alt="Bee 2"
+							fill
+							priority
+							className="object-cover scale-x-[-1]"
+							onError={(e) => ((e.target as HTMLImageElement).style.display = 'none')}
+						/>
+					</div>
+				</div>
+				{/* <div className="w-96 h-1 bg-green-800 mt-36"></div> */}
+				<div ref={heroContainerRef} className="mt-36 md:mt-56 z-100 flex justify-center">
 					<div
 						ref={wrapRef}
-						className="relative mx-auto h-[110vh] w-screen"
+						className="relative h-40 w-[300px] md:h-[200px] md:w-[500px] will-change-transform"
 						style={{
-							willChange: 'transform',
-							transform: 'translateZ(0)',
-							backfaceVisibility: 'hidden',
-							contain: 'paint', // isolates paints to this box
+							transformOrigin: '50% 50%',
+							left: 0,
+							top: 0,
 						}}
 					>
-						<div className="pointer-events-none absolute inset-0 z-[115] overflow-hidden">
-							{/* Start this just above the image; we animate its y */}
-							<div
-								ref={heroText2Ref}
-								className="absolute top-0 z-20 -mt-18 w-full items-center justify-center text-center select-none md:-mt-0"
-							>
-								<h1 className="font-sans text-sm text-white text-shadow-lg/30 md:text-2xl">
-									Where soul meets the soil
-								</h1>
-								<h2
-									className="font-serif text-[52px] leading-15 font-bold tracking-wide text-white text-shadow-lg/30 md:text-[76px] md:leading-none"
-									// style={{ WebkitTextStroke: '0.5px black' }}
-								>
-									Nurturing life <br /> with every season
-								</h2>
-							</div>
-						</div>
-						{/* Gradient overlay (fades in via GSAP)
-						<div
-							ref={overlayRef}
-							// className="pointer-events-none absolute inset-0 bg-gradient-to-b from-transparent via-transparent to-black/60"
-							className="pointer-events-none absolute inset-0 z-[112] bg-black/50"
-							aria-hidden
-						/> */}
 						<Image
 							ref={imgRef}
 							src="/images/Hero.jpg"
 							alt="Hero"
 							fill
-							sizes="100vw"
 							priority
-							className="rounded-sm object-cover"
+							className="object-cover rounded-lg"
 							onError={(e) => ((e.target as HTMLImageElement).style.display = 'none')}
 						/>
-						{/* OVERLAY (solid black; opacity controlled only by GSAP) */}
+						{/* Overlay that fades in during scroll */}
 						<div
 							ref={overlayRef}
-							className="pointer-events-none absolute inset-0 z-[112] bg-black"
-							aria-hidden
+							className="absolute inset-0 bg-black rounded-lg"
+							style={{ opacity: 0 }}
 						/>
-
-						{/* CTA layer (fades in near the end) */}
+						{/* CTA content that fades in during scroll */}
 						<div
 							ref={ctaRef}
-							className="absolute inset-0 z-[115] flex items-center justify-center pb-16 md:pb-20"
+							className="absolute inset-0 flex flex-col items-center justify-center gap-6 rounded-lg pointer-events-none"
+							style={{ opacity: 0, pointerEvents: 'none' }}
 						>
+							<p className="text-white text-3xl md:text-6xl font-serif leading-tight text-center max-w-4xl font-bold">
+								Explore our premium collection of farm-fresh products
+							</p>
 							<button
 								onClick={() => router.push('/shop')}
-								// className="rounded-sm bg-white/90 px-6 py-3 text-sm text-gray-900 shadow-lg ring-1 ring-black/5 backdrop-blur transition hover:bg-white"
-								className="mt-5 w-[20vw] min-w-[250px] rounded-sm border bg-transparent px-6 py-3 font-sans text-sm font-semibold text-white shadow-lg ring-1 ring-black/5 backdrop-blur transition hover:bg-amber-400 hover:text-gray-900"
+								className="mt-0 md:mt-20 px-20 py-2 md:py-3 bg-yellow-500 text-green-900 font-semibold rounded-lg hover:bg-yellow-400 transition-colors pointer-events-auto text-md md:text-2xl"
+								style={{ pointerEvents: 'auto' }}
 							>
-								SHOP NOW
+								Shop Now
 							</button>
 						</div>
+
+						<div className="relative md:absolute mt-[85vh] md:mt-[70vh] left-1/2 -translate-x-1/2">
+							<ScrollDownIndicator className="mx-auto mt-8 sm:mt-40 scale-75 md:scale-100" />
+						</div>
 					</div>
+				</div>
+				{/* Top one */}
+				<div className="absolute mt-[650px] sm:mt-[750px] md:mt-[1050px] left-1/2 -translate-x-1/2">
+					<ScrollDownIndicator className="mx-auto scale-75 md:scale-100" />
 				</div>
 			</div>
 
 			{/* Content continues */}
 			<section
 				ref={contentSectionRef}
-				className="z-[100] mx-auto flex max-w-7xl flex-col items-center py-24"
+				className="z-[100] mx-auto flex max-w-7xl flex-col items-center py-24 mt-[50vh] md:mt-[55vh]"
 			>
-				<div className="xs:min-h-[2150px] h-full w-full overflow-hidden md:min-h-[2500px]">
+				{/* <div className="xs:min-h-[2150px] h-full w-full overflow-hidden md:min-h-[2500px]"> */}
+				<div className="min-h-[3200px] xs:min-h-[3600px] h-full w-full overflow-hidden md:min-h-[3700px]">
 					<div className="flex w-full justify-end">
-						<div className="xs:-mt-[100px] xs:mr-0 xs:h-[450px] xs:w-64 absolute z-50 mt-[550px] mr-0 flex h-[350px] w-full overflow-hidden">
+						<div className="xs:-mt-[100px] xs:mr-16 xs:h-[450px] xs:w-64 absolute z-50 mt-[550px] mr-0 flex h-[350px] w-full overflow-hidden">
 							<Image
 								src="/images/editedBranch.png"
 								alt="Branch"
 								fill
 								priority
-								className="xs:ml-0 xs:rotate-0 xs:object-cover ml-15 rotate-90 object-contain"
+								className="xs:ml-0 xs:rotate-0 xs:object-cover ml-16 rotate-90 object-contain"
 								onError={(e) => ((e.target as HTMLImageElement).style.display = 'none')}
 							/>
 						</div>
-						<h3 className="z-51 mb-4 ml-5 flex w-full items-start font-serif text-6xl font-semibold text-green-900 md:text-7xl">
+						<h3 className="z-50 mb-4 ml-5 flex w-full items-start font-serif text-6xl font-semibold text-green-900 md:text-7xl">
 							Abisaki&apos;s
 							<br />
 							philosophy
 						</h3>
 					</div>
 					<div className="xs:min-h-[100px] relative min-h-[610px] w-full justify-center">
-						<div className="xs:h-72 xs:w-52 absolute z-50 h-60 w-44 rotate-3 md:mt-20 md:h-[400px] md:w-[300px] xl:ml-16">
+						<div
+							ref={momLandingImageRef}
+							className="xs:h-72 xs:w-52 absolute z-50 h-60 w-44 rotate-3 md:mt-20 md:h-[400px] md:w-[300px] xl:ml-16"
+						>
 							<Image
-								src="/images/momLanding.jpg"
+								src={MOM_LANDING_IMAGE_URL}
 								alt="Abisaki"
 								fill
 								priority
@@ -422,8 +522,8 @@ const Landing = () => {
 							/>
 						</div>
 						<div
-							data-speed="0.1"
-							className="xs:scale-50 xs:mt-16 xs:mr-32 absolute top-0 right-0 z-50 mt-[660px] mr-32 h-16 w-16 scale-40"
+							data-speed="0.35"
+							className="xs:scale-50 xs:-mt-40 xs:mr-32 absolute top-0 right-0 z-50 mt-[400px] mr-32 h-16 w-16 scale-40"
 						>
 							<Image
 								src="/images/cherry.png"
@@ -435,8 +535,8 @@ const Landing = () => {
 							/>
 						</div>
 						<div
-							data-speed="0.1"
-							className="xs:scale-50 xs:mt-52 xs:mr-20 absolute top-0 right-0 z-50 mt-[720px] mr-10 h-16 w-16 scale-40"
+							data-speed="0.2"
+							className="xs:scale-50 xs:mt-52 xs:mr-20 absolute top-0 right-0 z-50 mt-[620px] mr-10 h-16 w-16 scale-40"
 						>
 							<Image
 								src="/images/cherry.png"
@@ -449,7 +549,7 @@ const Landing = () => {
 						</div>
 						<div
 							data-speed="0.2"
-							className="xs:scale-50 xs:mr-36 xs:mb-52 absolute right-0 bottom-0 z-100 mr-20 -mb-96 h-16 w-16 scale-40"
+							className="xs:scale-50 xs:mr-36 xs:mb-52 absolute right-0 bottom-0 z-100 mr-20 -mb-52 h-16 w-16 scale-40"
 						>
 							<Image
 								src="/images/cherry.png"
@@ -462,29 +562,29 @@ const Landing = () => {
 						</div>
 						<div className="flex w-full justify-center md:ml-8">
 							<BlobText
-								title="A happy environment foster fruitful results"
-								description="Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation"
+								title="A happy environment fosters fruitful results"
+								description="Abisaki leads with love and care, guided by her vision of honest, nourishing food grown with integrity. What began as a family dream has blossomed into a farm rooted in quality, where every harvest reflects patience, respect, and heart."
 								style="left"
 								scale="scale-400"
 								staticId="blob-philosophy-left"
-								className="xs:mt-80 xs:ml-52 mt-60 ml-32 flex w-full justify-center md:mt-96"
+								className="xs:mt-80 xs:ml-52 mt-64 ml-32 flex w-full justify-center md:mt-96"
 							/>
 						</div>
 					</div>
-					<div className="relative flex w-full items-center">
+					<div className="relative flex w-full items-center mt-[200px] xs:mt-[50px]">
 						<div className="flex flex-1 justify-center">
 							<BlobText
-								title="Lorem ipsum dolor sit amet"
-								description="Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation"
+								title="Purity over volume"
+								description="At Abisaki’s Farm, quality comes first. Every crop is grown with intention, the soil respected, the process mindful, and the growth unhurried. Good food takes time, and we honor that journey from seed to table."
 								style="right"
 								// scale="scale-220 md:scale-100"
 								// className="mt-40 ml-10 md:mt-0"
 								scale="scale-400"
 								staticId="blob-story-right"
-								className="xs:mt-96 mt-40 ml-20 flex w-full justify-center md:mt-96"
+								className="xs:mt-80 ml-20 flex w-full justify-center md:mt-96"
 							/>
 						</div>
-						<div className="xs:mt-10 xs:h-72 xs:w-[350px] absolute right-0 z-50 mt-[800px] flex h-52 w-[250px] -translate-y-1/2 rotate-3 justify-end">
+						<div className="xs:mt-10 h-52 w-[250px] xs:h-72 xs:w-[350px] xlarge:w-[450px] xlarge:h-96 absolute right-0 mr-0 z-50 mt-[600px] flex -translate-y-1/2 justify-end">
 							<Image
 								src="/images/finalBasket.png"
 								alt="Coffee Basket"
@@ -495,56 +595,128 @@ const Landing = () => {
 							/>
 						</div>
 					</div>
-					<div className="relative h-170 w-full justify-center">
-						<div className="xs:block xs:h-72 xs:w-52 absolute z-50 hidden h-60 w-44 -rotate-3 md:mt-20 md:h-[400px] md:w-[300px] xl:ml-16">
-							{/* <div className="absolute z-50 mt-50 ml-16 hidden h-72 w-52 -rotate-3 md:mt-10 md:block"> */}
+					<div className="relative w-full justify-center">
+						<div
+							ref={povImageRef}
+							className="xs:h-72 xs:w-52 absolute z-50 h-60 w-44 -rotate-3 mt-[450px] xs:mt-[90px] md:-mt-10 md:h-[400px] md:w-[300px] xl:ml-16"
+						>
 							<Image
-								src="/images/parchmentLanding.jpg"
-								alt="Parchment"
+								src="/images/POV.jpg"
+								alt="POV"
 								fill
 								priority
-								className="ml-5 rounded-sm object-cover"
+								className="ml-32 xs:ml-5 rounded-sm object-cover"
 								onError={(e) => ((e.target as HTMLImageElement).style.display = 'none')}
 							/>
 						</div>
-						<div className="flex w-full justify-center">
+						<div className="flex w-full justify-center -h-[600px]">
 							<BlobText
-								title="Lorem ipsum dolor sit amet"
-								description="Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation"
+								title="Purposeful growth"
+								description="We let nature set the pace. Through regenerative farming, we grow only when the land and systems are ready. Each expansion is a mindful step, ensuring sustainability and harmony between soil, people, and produce."
 								style="center"
-								// scale="scale-200 md:scale-100"
-								// className="mt-60 ml-10 md:mt-0"
 								scale="scale-400"
 								staticId="blob-values-center"
-								className="xs:mt-96 xs:ml-52 mt-72 flex w-full justify-center md:mt-[480px]"
+								className="xs:ml-52 mt-64 xs:mt-[400px] flex w-full justify-center"
 							/>
-							<div className="xs:left-auto xs:right-0 absolute right-0 bottom-0 left-5 z-50 h-52 w-52 md:h-72 md:w-72">
+							<div
+								ref={flowerImageRef}
+								className="xs:left-auto xs:right-0 absolute right-0 bottom-0 left-5 z-50 h-52 w-52 xs:h-60 xs:w-60 md:h-72 md:w-72"
+							>
 								<Image
 									src="/images/flower.png"
 									alt="Flower"
 									fill
 									priority
-									className="xs:mt-32 xs:scale-x-100 -scale-x-100 transform object-cover md:mt-72"
+									className="mt-[710px] xs:mt-56 xs:scale-x-100 -scale-x-100 transform object-cover md:mt-60"
 									onError={(e) => ((e.target as HTMLImageElement).style.display = 'none')}
 								/>
 							</div>
-							<div className="motion-safe:animate-levitate xs:left-auto xs:right-0 xs:h-15 xs:w-16 absolute right-0 bottom-0 left-5 z-50 h-10 w-10 scale-x-[-1] will-change-transform">
+							<div
+								ref={beeOneRef}
+								className="motion-safe:animate-levitate xs:left-auto xs:right-0 md:h-15 md:w-16 h-10 w-10 absolute right-0 bottom-0 left-5 z-50 will-change-transform"
+							>
 								<Image
 									src="/images/bee.png"
 									alt="Bee 1"
 									fill
 									priority
-									className="xs:mt-30 xs:ml-0 mt-0 -ml-40 object-cover md:mt-60"
+									className="mt-[600px] xs:mt-52 xs:ml-0 ml-32 object-cover md:mt-52 scale-x-[-1]"
 									onError={(e) => ((e.target as HTMLImageElement).style.display = 'none')}
 								/>
 							</div>
-							<div className="motion-safe:animate-levitate xs:left-auto xs:right-0 xs:h-20 xs:w-20 absolute right-0 bottom-0 left-0 z-50 h-16 w-16 will-change-transform">
+							<div
+								ref={beeTwoRef}
+								style={{ animationDelay: '0.5s' }}
+								className="motion-safe:animate-levitate xs:left-auto xs:right-0 md:h-20 md:w-20 absolute right-0 bottom-0 left-0 z-50 h-10 w-10 will-change-transform"
+							>
 								<Image
 									src="/images/bee.png"
 									alt="Bee 2"
 									fill
 									priority
-									className="xs:mt-10 xs:-ml-40 -mt-25 object-cover md:mt-40 md:-ml-55"
+									className="mt-[700px] xs:mt-10 xs:-ml-40 ml-5 object-cover md:mt-32 md:-ml-55"
+									onError={(e) => ((e.target as HTMLImageElement).style.display = 'none')}
+								/>
+							</div>
+						</div>
+					</div>
+					<div className="relative flex w-full items-center">
+						<div className="flex flex-1 justify-center">
+							<BlobText
+								title="Ownership & Care"
+								description="Our team ensures every product meets our high standards. Skilled, empowered, and dedicated, they handle each stage of production with care. From planting to packaging, we focus on safe, traceable, and responsibly grown farm produce."
+								style="right"
+								scale="scale-400"
+								staticId="blob-story-right"
+								// className="xs:mt-0 mt-60 ml-20 flex w-full justify-center"
+								className="xs:mt-0 -mt-20 ml-20 flex w-full justify-center"
+							/>
+						</div>
+						<div className="mt-[900px] overflow-clip">
+							{/* Trio smiling */}
+							<div
+								data-speed="-0.2"
+								className="h-[410px] w-full md:h-[460px] md:w-[250px] lg:h-[680px] lg:w-[350px] absolute right-20 md:right-0 md:left-10 mt-[810px] md:mt-[1000px] z-20"
+							>
+								<Image
+									src="/images/smiles.png"
+									alt="smiles"
+									fill
+									priority
+									className="rounded-sm object-contain md:object-cover -rotate-3"
+									onError={(e) => ((e.target as HTMLImageElement).style.display = 'none')}
+								/>
+							</div>
+							<div>
+								{/* Grandma */}
+								<div
+									className="h-[400px] w-full  md:h-[460px] md:w-[250px] lg:h-[680px] lg:w-[350px] absolute left-72 md:left-1/2 -translate-x-1/2 mt-[900px] md:mt-[1100px] z-10"
+									data-speed="-0.225"
+								>
+									<Image
+										src="/images/smiles-3.png"
+										alt="smiles"
+										fill
+										priority
+										className="rounded-sm object-contain md:object-cover rotate-6 md:rotate-0"
+										onError={(e) => ((e.target as HTMLImageElement).style.display = 'none')}
+									/>
+								</div>
+								<h2 className="absolute left-1/2 -translate-x-1/2 mt-[270px] md:mt-[300px] lg:mt-[400px] text-3xl md:text-4xl lg:text-[45px] font-serif font-bold text-green-900 text-center">
+									{'Smile a little'}
+								</h2>
+							</div>
+							{/* Cherry picking smile */}
+							<div
+								data-speed="-0.10"
+								className="h-[450px] w-full md:h-[460px] md:w-[250px] lg:h-[680px] lg:w-[350px] absolute right-0 md:right-10 mt-[740px] md:mt-[550px] z-50 md:z-10"
+							>
+								<Image
+									src="/images/smiles-2.png"
+									alt="smiles"
+									fill
+									priority
+									className="rounded-sm object-contain md:object-cover -rotate-3 md:rotate-3"
 									onError={(e) => ((e.target as HTMLImageElement).style.display = 'none')}
 								/>
 							</div>
@@ -553,11 +725,15 @@ const Landing = () => {
 				</div>
 				{/* Pinned/sticky block under your navbar (h-20 ≈ 80px) */}
 				{/* <div ref={mapSectionRef} className="h-[180vh]"> */}
-				<div ref={mapSectionRef} className="mr-6 h-[170vh] min-h-[1300px] md:h-[150vh]">
-					<div ref={stickyRef} className="sticky top-10 z-10">
+				<div
+					ref={mapSectionRef}
+					className="mt-10 xs:mt-0 mr-6"
+					// className="mt-10 xs:mt-0 mr-6 h-[170vh] min-h-[1300px] md:h-[150vh]"
+				>
+					<div ref={stickyRef} className="z-10">
 						<div className="mx-auto max-w-7xl px-4 pt-12">
 							<Title title="Our Farm" />
-							<div className="relative mx-auto mt-12 h-[407px] w-[343px]">
+							<div className="relative mx-auto mt-20 h-[407px] w-[343px]">
 								<svg
 									xmlns="http://www.w3.org/2000/svg"
 									width="370.814"
@@ -734,18 +910,102 @@ const Landing = () => {
 				</div>
 
 				{/* Content after the sticky/draw section */}
-				<div className="xs:w-full mx-auto mt-24 xs:mt-52 mr-110 w-[350px] max-w-3xl overflow-x-hidden px-4 text-center">
-					<p className="xs:text-xl font-serif text-lg font-bold text-green-900 md:text-2xl">
-						Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor
-						incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud
-						exercitation Lorem ipsum dolor sit amet, consectetur adipiscing elit incididunt ut
-						labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation Lorem
-						ipsum dolor sit amet, consectetur adipiscing elit
+				<div className="w-full mx-auto mt-24 mr-110 max-w-3xl overflow-x-hidden px-4 text-center">
+					<h2 className="text-4xl leading-none xs:text-5xl font-serif text-green-900 text-center font-bold pb-10">
+						In the perfect place for healthy growth and happy harvests
+					</h2>
+					<p className="xs:text-xl text-md text-gray-700 md:text-lg">
+						Our 30-acre farm sits 1,900 meters above sea level, where cool air, steady rains, and
+						rich soil create ideal conditions for growing quality produce. The land supports us
+						generously, and we care for it in return. Just as important are the people here. Joyful,
+						hardworking team who take pride in every seed planted and every harvest gathered.
 					</p>
+					<div className="flex flex-col gap-10">
+						<div className="flex justify-center gap-5 xs:gap-10 mt-10">
+							<div
+								ref={acresCardRef}
+								className="flex text-center flex-col items-center justify-center"
+							>
+								<h2 className="text-7xl md:text-8xl text-yellow-500 font-extrabold font-serif">
+									30+
+								</h2>
+								<p className="text-xl font-bold xs:font-normal md:text-3xl text-green-900 font-serif -mt-2 uppercase">
+									Acres
+								</p>
+							</div>
+							<div
+								ref={elevationCardRef}
+								className="flex text-center flex-col items-center justify-center"
+							>
+								<h2 className="text-7xl md:text-8xl text-yellow-500 font-extrabold font-serif">
+									1900m
+								</h2>
+								<p className="text-xl font-bold xs:font-normal md:text-3xl text-green-900 font-serif -mt-2 uppercase">
+									Elevation
+								</p>
+							</div>
+							<div
+								ref={farmFreshCardRef1}
+								className="hidden xs:flex text-center flex-col items-center justify-center"
+							>
+								<h2 className="text-7xl md:text-8xl text-yellow-500 font-extrabold font-serif">
+									100%
+								</h2>
+								<p className="text-lg md:text-3xl text-green-900 font-serif -mt-2 uppercase">
+									Farm Fresh
+								</p>
+							</div>
+						</div>
+						<div
+							ref={farmFreshCardRef2}
+							className="xs:hidden flex text-center flex-col items-center justify-center"
+						>
+							<h2 className="text-7xl text-yellow-500 font-extrabold font-serif">100%</h2>
+							<p className="text-xl font-bold xs:font-normal text-green-900 font-serif -mt-2 uppercase">
+								Farm Fresh
+							</p>
+						</div>
+					</div>
+
+					{/* <div className="h-[480px] w-[680px] absolute left-1/2 -translate-x-1/2"> */}
+					<div className="flex flex-col h-[900px] xs:mt-32 overflow-clip">
+						<div
+							data-speed="-0.15"
+							className="h-56 w-[90vw] max-w-96 xs:h-[480px] xs:max-w-[680px] xs:-ml-5 absolute left-1/2 -translate-x-1/2 mt-[1300px] z-10 overflow-clip"
+						>
+							<Image
+								src="/images/framed-group-pic-2.png"
+								alt="Group Picture"
+								fill
+								priority
+								className="rounded-sm object-cover rotate-3"
+								onError={(e) => ((e.target as HTMLImageElement).style.display = 'none')}
+							/>
+						</div>
+						<h2 className="absolute left-1/2 -translate-x-1/2 mt-[420px] xs:mt-[530px] text-3xl xs:text-[45px] font-serif font-bold text-green-900 text-center z-0 text-nowrap overflow-clip">
+							{'Always smiling'}
+						</h2>
+						<div
+							data-speed="0.17"
+							className="h-56 w-[92vw] max-w-[450px] xs:h-[450px] xs:max-w-[750px] absolute left-1/2 -translate-x-1/2 z-50 -mt-[800px] overflow-clip "
+						>
+							<Image
+								src="/images/smiles-4.png"
+								alt="Smiles"
+								fill
+								priority
+								className="rounded-sm object-cover -rotate-3 ml-10 xs:ml-20"
+								onError={(e) => ((e.target as HTMLImageElement).style.display = 'none')}
+							/>
+						</div>
+					</div>
 				</div>
 
-				<Title title="Interactive Map" wrapperClass="mt-16 pb-16" />
-				<div className="mt-2 rounded-2xl border-3 border-yellow-500 w-full max-w-5xl">
+				<Title title="Interactive Map" wrapperClass="xs:mt-80 pb-16 text-center" />
+				<div className="mt-2 rounded-2xl border-3 border-yellow-500 w-full max-w-5xl px-2">
+					<div className="flex w-full justify-end">
+						<p className="text-lg md:text-xl font-serif text-green-900">Click on markers</p>
+					</div>
 					<MapCard
 						center={MAP_CENTER}
 						zoom={17}
@@ -759,13 +1019,6 @@ const Landing = () => {
 				<section>
 					<div className="relative z-[40]">
 						{/* page-wide dimmer that appears when any card is hovered */}
-						{/* <div
-							className={[
-								'pointer-events-none fixed inset-0 overflow-x-hidden bg-black/45 backdrop-blur-[1px]',
-								'transition-opacity duration-500',
-								hoveredIdx !== null ? 'z-30 opacity-100' : '-z-10 opacity-0',
-							].join(' ')}
-						/> */}
 						<div
 							onClick={() => setHoveredIdx(null)}
 							className={[
@@ -777,7 +1030,7 @@ const Landing = () => {
 							].join(' ')}
 						/>
 						<div className="flex flex-col items-center px-4 pt-24">
-							<Title title="Our Products" />
+							<Title title="Our Products" wrapperClass="text-center" />
 
 							<div className="relative flex flex-col gap-5 pt-10 md:flex-row md:gap-10 ">
 								<ProductCard

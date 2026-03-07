@@ -87,7 +87,7 @@ export default function ImageCarousel({ title = 'Our Techniques', slides, classN
 			const offset = (((i - index) % N) + N) % N; // normalize to [0..N-1]
 			const base =
 				// card shell
-				'absolute w-[280px] h-[380px] sm:w-[350px] sm:h-[350px] rounded-sm overflow-hidden bg-white ' +
+				'absolute w-[220px] h-[300px] sm:w-[350px] sm:h-[350px] rounded-sm overflow-hidden bg-white ' +
 				'shadow-[0_20px_40px_rgba(0,0,0,0.15)] transition-all duration-600 ' +
 				'ease-[cubic-bezier(0.25,0.46,0.45,0.94)] cursor-pointer will-change-transform';
 
@@ -218,7 +218,7 @@ export default function ImageCarousel({ title = 'Our Techniques', slides, classN
 				</div>
 			</div>
 			{/* Dots */}
-			<div className="mt-10 flex items-center justify-center gap-2.5">
+			<div className="xs:mt-10 flex items-center justify-center gap-2.5">
 				{slides.map((_, i) => {
 					const active = i === index;
 					return (
@@ -239,11 +239,11 @@ export default function ImageCarousel({ title = 'Our Techniques', slides, classN
 			<div
 				className={`mt-6 text-center transition-opacity duration-600 md:mt-10 ${infoVisible ? 'opacity-100' : 'opacity-0'} `}
 			>
-				<h2 className="xs:text-5xl relative font-serif text-4xl text-green-900">
+				<h2 className="xs:text-5xl relative font-serif text-3xl text-green-900">
 					{slides[index]?.name}
 				</h2>
-				<div className="mt-5 flex w-full justify-center">
-					<p className="max-w-[550px] px-10 font-sans text-lg text-green-900 md:max-w-[650px] md:px-0 md:font-semibold">
+				<div className="mt-3 xs:mt-5 flex w-full justify-center">
+					<p className="max-w-[550px] px-10 font-sans text-sm xs:text-lg text-green-900 md:max-w-[650px] md:px-0 md:font-semibold">
 						{slides[index]?.description}
 					</p>
 				</div>

@@ -12,7 +12,7 @@ const ScrollDownIndicator = ({ className, label = 'Scroll down' }: ScrollDownInd
 				{label}
 			</span>
 			<div className="relative flex flex-col items-center">
-				<div className="relative flex h-16 w-10 items-center justify-center rounded-full border-2 border-yellow-500/60 bg-white/80 shadow-[0_14px_35px_rgba(0,0,0,0.12)] backdrop-blur-sm">
+				<div className="relative flex h-16 w-10 items-center justify-center rounded-full border-2 border-yellow-500/60 bg-white shadow-[0_14px_35px_rgba(0,0,0,0.12)] backdrop-blur-sm">
 					<span
 						aria-hidden
 						className="h-2.5 w-2.5 rounded-full bg-yellow-500 motion-safe:animate-scroll-dot"

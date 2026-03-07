@@ -89,6 +89,11 @@
 		scrollbar-width: none; /* Firefox */
 	}
 
+	@utility text-stroke-* {
+		-webkit-text-stroke-width: calc(var(--value) * 1px);
+		-webkit-text-stroke-color: var(--value);
+	}
+
 	input:focus ~ label,
 	input:not(:placeholder-shown) ~ label {
 		@apply -translate-y-2 text-xsmall-regular;

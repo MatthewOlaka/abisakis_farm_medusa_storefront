@@ -10,6 +10,20 @@ const regionMapCache = {
 	regionMapUpdated: Date.now(),
 };
 
+function getErrorContext(
+	url: string,
+	status: number,
+	statusText: string,
+	contentType: string,
+	body: string,
+) {
+	const preview = body.replace(/\s+/g, ' ').trim().slice(0, 200);
+
+	return `Middleware.ts: Failed to fetch regions from ${url} (${status} ${statusText}). content-type=${contentType || 'unknown'}${
+		preview ? ` body-preview="${preview}"` : ''
+	}`;
+}
+
 async function getRegionMap(cacheId: string) {
 	const { regionMap, regionMapUpdated } = regionMapCache;
 
@@ -20,38 +34,76 @@ async function getRegionMap(cacheId: string) {
 	}
 
 	if (!regionMap.keys().next().value || regionMapUpdated < Date.now() - 3600 * 1000) {
-		// Fetch regions from Medusa. We can't use the JS client here because middleware is running on Edge and the client needs a Node environment.
-		const { regions } = await fetch(`${BACKEND_URL}/store/regions`, {
-			headers: {
-				'x-publishable-api-key': PUBLISHABLE_API_KEY!,
-			},
-			next: {
-				revalidate: 3600,
-				tags: [`regions-${cacheId}`],
-			},
-			cache: 'force-cache',
-		}).then(async (response) => {
-			const json = await response.json();
+		try {
+			// Fetch regions from Medusa. We can't use the JS client here because middleware is running on Edge and the client needs a Node environment.
+			const regionsUrl = `${BACKEND_URL}/store/regions`;
+			const response = await fetch(regionsUrl, {
+				headers: {
+					'x-publishable-api-key': PUBLISHABLE_API_KEY!,
+					'ngrok-skip-browser-warning': 'true',
+				},
+				next: {
+					revalidate: 3600,
+					tags: [`regions-${cacheId}`],
+				},
+				cache: 'force-cache',
+			});
 
-			if (!response.ok) {
-				throw new Error(json.message);
+			const contentType = response.headers.get('content-type')?.toLowerCase() ?? '';
+			const responseText = await response.text();
+
+			let json: { regions?: HttpTypes.StoreRegion[]; message?: string } | null = null;
+			if (responseText) {
+				try {
+					json = JSON.parse(responseText);
+				} catch {
+					json = null;
+				}
 			}
 
-			return json;
-		});
+			if (!response.ok) {
+				const apiMessage = typeof json?.message === 'string' ? json.message : '';
+				const errorContext = getErrorContext(
+					regionsUrl,
+					response.status,
+					response.statusText,
+					contentType,
+					responseText,
+				);
+				throw new Error(apiMessage ? `${apiMessage} (${errorContext})` : errorContext);
+			}
 
-		if (!regions?.length) {
-			throw new Error('No regions found. Please set up regions in your Medusa Admin.');
-		}
+			const regions = json?.regions;
+			if (!regions?.length) {
+				const errorContext = getErrorContext(
+					regionsUrl,
+					response.status,
+					response.statusText,
+					contentType,
+					responseText,
+				);
+				throw new Error(
+					`No regions found. Please set up regions in your Medusa Admin. (${errorContext})`,
+				);
+			}
 
-		// Create a map of country codes to regions.
-		regions.forEach((region: HttpTypes.StoreRegion) => {
-			region.countries?.forEach((c) => {
-				regionMapCache.regionMap.set(c.iso_2 ?? '', region);
+			// Create a map of country codes to regions.
+			regions.forEach((region: HttpTypes.StoreRegion) => {
+				region.countries?.forEach((c) => {
+					regionMapCache.regionMap.set(c.iso_2 ?? '', region);
+				});
 			});
-		});
 
-		regionMapCache.regionMapUpdated = Date.now();
+			regionMapCache.regionMapUpdated = Date.now();
+		} catch (error) {
+			// Keep storefront navigation working with stale regions if refresh fails transiently.
+			if (regionMap.size) {
+				console.warn('Middleware.ts: Failed to refresh regions; using stale region map.', error);
+				return regionMap;
+			}
+
+			throw error;
+		}
 	}
 
 	return regionMapCache.regionMap;

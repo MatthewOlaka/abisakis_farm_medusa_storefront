@@ -159,6 +159,14 @@ const config = {
 						transform: 'rotate(360deg)',
 					},
 				},
+				levitate: {
+					'0%, 100%': {
+						transform: 'translateY(0px)',
+					},
+					'50%': {
+						transform: 'translateY(-20px)',
+					},
+				},
 				'fade-in-right': {
 					'0%': {
 						opacity: '0',
@@ -260,6 +268,7 @@ const config = {
 			},
 			animation: {
 				ring: 'ring 2.2s cubic-bezier(0.5, 0, 0.5, 1) infinite',
+				levitate: 'levitate 3s ease-in-out infinite',
 				'fade-in-right': 'fade-in-right 0.3s cubic-bezier(0.5, 0, 0.5, 1) forwards',
 				'fade-in-top': 'fade-in-top 0.2s cubic-bezier(0.5, 0, 0.5, 1) forwards',
 				'fade-out-top': 'fade-out-top 0.2s cubic-bezier(0.5, 0, 0.5, 1) forwards',

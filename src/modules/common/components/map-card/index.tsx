@@ -1,7 +1,15 @@
 'use client';
 
 import { importLibrary, setOptions } from '@googlemaps/js-api-loader';
-import { useEffect, useRef } from 'react';
+import Image from 'next/image';
+import { useEffect, useRef, useState } from 'react';
+
+type Spot = {
+	position: google.maps.LatLngLiteral;
+	title: string;
+	description?: string;
+	imageSrc?: string;
+};
 
 type Props = {
 	center: google.maps.LatLngLiteral;
@@ -26,6 +34,9 @@ export default function MapCard({
 	markers,
 }: Props) {
 	const mapRef = useRef<HTMLDivElement | null>(null);
+	const mapInstanceRef = useRef<google.maps.Map | null>(null);
+	const resetViewRef = useRef<() => void>(() => {});
+	const [activeSpot, setActiveSpot] = useState<Spot | null>(null);
 
 	useEffect(() => {
 		let map: google.maps.Map | null = null;
@@ -43,7 +54,7 @@ export default function MapCard({
 
 			// Always load core maps; advanced markers only if a Map ID is present
 			const { Map } = (await importLibrary('maps')) as google.maps.MapsLibrary;
-			let AdvancedMarkerElement: google.maps.marker.AdvancedMarkerElementConstructor | null = null;
+			let AdvancedMarkerElement: typeof google.maps.marker.AdvancedMarkerElement | null = null;
 			const mapId = process.env.NEXT_PUBLIC_GOOGLE_MAPS_MAP_ID;
 			if (mapId) {
 				try {
@@ -66,13 +77,12 @@ export default function MapCard({
 				tilt: 0,
 				...(mapId ? { mapId } : {}),
 			});
+			mapInstanceRef.current = map;
 
 			const spots =
 				markers && markers.length > 0
 					? markers
 					: [{ position: center, title: markerTitle, description: undefined, imageSrc: undefined }];
-
-			const infoWindow = new google.maps.InfoWindow();
 
 			const resetView = () => {
 				if (!map) return;
@@ -81,6 +91,7 @@ export default function MapCard({
 				map.setTilt?.(0);
 				map.setHeading?.(0);
 			};
+			resetViewRef.current = resetView;
 
 			if (perimeter && perimeter.length > 2) {
 				polygon = new google.maps.Polygon({
@@ -103,31 +114,22 @@ export default function MapCard({
 							new google.maps.Marker({ map, position: spot.position, title: spot.title });
 
 				mk.addListener('click', () => {
-					const container = document.createElement('div');
-					container.style.maxWidth = '240px';
-					container.style.fontFamily = 'sans-serif';
-					container.innerHTML = `
-						<div style="display:flex;gap:12px;align-items:flex-start;">
-							${spot.imageSrc ? `<img src="${spot.imageSrc}" alt="${spot.title}" style="width:64px;height:64px;object-fit:cover;border-radius:8px;flex-shrink:0;" />` : ''}
-							<div style="flex:1;">
-								<h3 style="margin:0 0 6px;font-size:14px;font-weight:700;">${spot.title}</h3>
-								${spot.description ? `<p style="margin:0;font-size:12px;line-height:1.4;">${spot.description}</p>` : ''}
-							</div>
-						</div>
-					`;
-					infoWindow.setContent(container);
-					infoWindow.open({ anchor: mk, map });
+					setActiveSpot(spot);
 
 					map?.panTo(spot.position);
 					map?.setZoom(Math.min(zoom + 4, 21));
 					map?.setTilt?.(80);
 					map?.setHeading?.(25);
+					if (map) {
+						google.maps.event.addListenerOnce(map, 'idle', () => {
+							map?.setTilt?.(80);
+							map?.setHeading?.(25);
+						});
+					}
 				});
 
 				markerInstances.push(mk);
 			});
-
-			infoWindow.addListener('closeclick', resetView);
 
 			// keep center on container resize
 			ro = new ResizeObserver(() => map?.setCenter(center));
@@ -148,15 +150,61 @@ export default function MapCard({
 			if (map) {
 				google.maps.event.clearInstanceListeners(map);
 			}
+			mapInstanceRef.current = null;
+			resetViewRef.current = () => {};
 			map = null;
 		};
 	}, [center, zoom, markerTitle, markers, perimeter]);
 
 	return (
-		<div
-			ref={mapRef}
-			className={`w-full rounded-xl border border-green-900/20 ${className}`}
-			style={{ height: '550px' }}
-		/>
+		<div className="map-card-root relative">
+			<div
+				ref={mapRef}
+				className={`w-full rounded-xl border border-green-900/20 ${className}`}
+				style={{ height: '550px' }}
+			/>
+			{activeSpot ? (
+				<div className="absolute right-4 top-4 z-10 w-[300px] min-h-[180px] rounded-xl bg-yellow-100 p-4 shadow-xl">
+					<button
+						type="button"
+						className="absolute right-2 top-2 rounded px-2 py-1 text-sm font-semibold text-gray-500 hover:bg-gray-100 hover:text-gray-700"
+						onClick={() => {
+							setActiveSpot(null);
+							resetViewRef.current();
+							const currentMap = mapInstanceRef.current;
+							if (currentMap) {
+								google.maps.event.addListenerOnce(currentMap, 'idle', () => {
+									currentMap.setTilt?.(0);
+									currentMap.setHeading?.(0);
+								});
+							}
+						}}
+						aria-label="Close map details"
+					>
+						×
+					</button>
+					<div className="flex min-h-[180px] gap-3 pr-5">
+						{activeSpot.imageSrc ? (
+							<Image
+								src={activeSpot.imageSrc}
+								alt={activeSpot.title}
+								width={96}
+								height={156}
+								unoptimized
+								className="h-[156px] w-24 shrink-0 rounded-lg object-cover"
+							/>
+						) : null}
+						<div className="flex-1">
+							<h3 className="mb-2 font-serif text-lg xs:text-xl font-bold text-green-900">
+								{activeSpot.title}
+							</h3>
+							{activeSpot.description ? (
+								<p className="text-sm leading-6 text-gray-700">{activeSpot.description}</p>
+							) : null}
+						</div>
+					</div>
+				</div>
+			) : null}
+		</div>
 	);
 }

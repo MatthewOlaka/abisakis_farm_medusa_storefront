@@ -15,12 +15,12 @@ const TimelineText = (props: IProps) => {
 				<h1 className="xs:text-7xl font-serif text-6xl font-bold -tracking-widest text-yellow-500">
 					{idx}
 				</h1>
-				<h1 className="xs:text-4xl font-serif text-3xl font-bold -tracking-widest text-green-900">
+				<h1 className="xs:text-4xl font-serif text-3xl font-bold -tracking-wider text-green-900 text-nowrap">
 					{title}
 				</h1>
 			</div>
 			<div className="flex justify-center">
-				<p className="xs:text-xl xs:max-w-[350px] text-center font-serif text-sm leading-none text-green-900">
+				<p className="xs:text-lg xs:max-w-[350px] text-center font-serif text-sm leading-none text-green-900">
 					{description}
 				</p>
 			</div>

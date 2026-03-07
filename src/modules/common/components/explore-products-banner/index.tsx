@@ -3,7 +3,7 @@ import { Button } from '../button';
 
 const ExploreProductsBanner = () => {
 	return (
-		<div className="xs:h-64 relative flex h-95 w-full justify-between overflow-hidden rounded-3xl bg-green-900 md:max-w-[850px]">
+		<div className="xs:h-64 relative flex h-96 w-full justify-between overflow-hidden rounded-3xl bg-green-900 md:max-w-[850px]">
 			{/* Left honey spoon */}
 			<div className="xs:relative xs:h-60 xs:w-52 xs:-mt-10 pointer-events-none absolute z-0 h-32 w-32 select-none">
 				<Image
@@ -17,7 +17,7 @@ const ExploreProductsBanner = () => {
 			</div>
 
 			{/* Center content */}
-			<div className="xs:mt-5 xs:ml-7 z-10 mt-25 flex w-full flex-col items-center justify-center gap-5">
+			<div className="xs:mt-5 xs:ml-7 z-10 mt-28 flex w-full flex-col items-center justify-center gap-5">
 				<div>
 					<h1 className="text-center font-serif text-5xl text-white md:text-6xl">
 						Explore Other
@@ -38,7 +38,7 @@ const ExploreProductsBanner = () => {
 					text="Shop Now"
 					size="medium"
 					borderRadius="rounded-xl"
-					wrapperClass="mt-10 xs:mt-0 max-w-46 z-100 font-semibold"
+					wrapperClass="mt-10 xs:mt-0 max-w-44 z-100 font-semibold"
 				/>
 			</div>
 

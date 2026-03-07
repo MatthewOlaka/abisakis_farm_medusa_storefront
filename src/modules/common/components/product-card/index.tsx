@@ -89,7 +89,7 @@ const ProductCard = ({
 				{/* 3D panel */}
 				<div
 					className={[
-						'relative mt-10 h-96 w-64 overflow-hidden rounded-sm shadow-lg',
+						'relative mt-10 h-80 w-52 xs:h-[340px] xs:w-[220px] lg:h-96 lg:w-64 overflow-hidden rounded-sm shadow-2xl',
 						'[transform-origin:bottom_left] transform-gpu [transform-style:preserve-3d]',
 						'transition-transform duration-500 ease-[cubic-bezier(.2,.6,.2,1)]',
 						// Use parent-driven "active" for both desktop (hoveredIdx) and mobile (first tap)

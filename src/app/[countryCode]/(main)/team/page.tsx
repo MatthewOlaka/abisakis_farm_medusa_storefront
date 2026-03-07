@@ -114,9 +114,9 @@ export default function TeamPage() {
 					<TeamCard key={idx} {...member} />
 				))}
 			</div>
-			<div className="flex w-full justify-center px-5 md:px-25">
+			<div className="flex w-full justify-center px-5 md:px-24">
 				{/* <div className="my-40 flex h-120 w-full flex-col items-center justify-center rounded-4xl bg-green-800/20 md:h-70 md:max-w-4xl md:flex-row"> */}
-				<div className="my-40 flex h-[480px] w-full flex-col items-center justify-center rounded-3xl bg-gradient-to-tl from-green-600/70 to-green-800 md:h-72 md:max-w-3xl md:flex-row">
+				<div className="my-40 md:pr-5 flex h-[480px] w-full flex-col items-center justify-center rounded-3xl bg-gradient-to-tl from-green-600/70 to-green-800 md:h-72 md:max-w-3xl md:flex-row">
 					<div className="flex flex-col items-center gap-5 px-5 md:max-w-1/2">
 						{/* <h1 className="font-serif text-5xl font-bold text-green-900"> */}
 						<h1 className="font-serif text-4xl font-bold text-white lg:text-5xl">
@@ -127,7 +127,7 @@ export default function TeamPage() {
 							We are always looking for great people to work and connect with. Chat to our team.
 						</h2>
 						<Button
-							wrapperClass="hover:bg-yellow-400 !text-green-900 px-16 py-3 rounded-full border border-amber-300 text-nowrap"
+							wrapperClass="!text-green-900 px-16 py-3 rounded-full border border-amber-300 text-nowrap"
 							text="View Openings"
 							onClick={() => router.push('/careers')}
 						/>
@@ -142,8 +142,8 @@ export default function TeamPage() {
 										'relative h-24 w-24 rounded-full border-2 shadow-md',
 										// alternate background colors (change these two to your palette)
 										i % 2 === 0
-											? 'border-green-700 bg-yellow-500'
-											: 'border-yellow-500 bg-gray-200',
+											? 'border-green-700 bg-yellow-200'
+											: 'border-yellow-200 bg-yellow-100',
 										// overlap to the left (skip the first one)
 										i > 0 ? '-ml-3' : '',
 									].join(' ')}

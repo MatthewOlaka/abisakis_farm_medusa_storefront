@@ -19,9 +19,7 @@ export default function useParallax(rootRef?: RefObject<HTMLElement>, opts: Opts
 		let entries: Entry[] = qsa(selector).map((el) => {
 			// Preserve original transform once (scale/rotate/etc.) so we don't stack our own translate
 			const existing = getComputedStyle(el).transform;
-			const base =
-				el.dataset.parallaxBaseTransform ??
-				(existing === 'none' ? '' : existing);
+			const base = el.dataset.parallaxBaseTransform ?? (existing === 'none' ? '' : existing);
 			// cache it to avoid reading a translate we applied earlier
 			if (!el.dataset.parallaxBaseTransform) {
 				el.dataset.parallaxBaseTransform = base;
@@ -53,9 +51,7 @@ export default function useParallax(rootRef?: RefObject<HTMLElement>, opts: Opts
 		const rebind = () => {
 			entries = qsa(selector).map((el) => {
 				const existing = getComputedStyle(el).transform;
-				const base =
-					el.dataset.parallaxBaseTransform ??
-					(existing === 'none' ? '' : existing);
+				const base = el.dataset.parallaxBaseTransform ?? (existing === 'none' ? '' : existing);
 				if (!el.dataset.parallaxBaseTransform) {
 					el.dataset.parallaxBaseTransform = base;
 				}
@@ -94,5 +90,5 @@ export default function useParallax(rootRef?: RefObject<HTMLElement>, opts: Opts
 			window.removeEventListener('pageshow', onPageShow);
 			imgs.forEach((img: any) => img.removeEventListener?.('load', onImg));
 		};
-	}, [rootRef?.current, selector, axis]);
+	}, [selector, axis, rootRef]);
 }
