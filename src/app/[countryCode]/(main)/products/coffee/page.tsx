@@ -1,5 +1,15 @@
 import FeaturedProducts from '@modules/products/components/featured-products';
+import { Metadata } from 'next';
 import CoffeeClient from './CoffeeClient';
+
+export const metadata: Metadata = {
+	title: "Coffee | Abisaki's Farm",
+	description: 'Discover our premium Kenyan coffee — hand-picked, sun-dried, and roasted to perfection at Abisaki\'s Farm.',
+	openGraph: {
+		title: "Coffee | Abisaki's Farm",
+		description: 'Premium Kenyan coffee from Abisaki\'s Farm.',
+	},
+};
 
 type PageProps = {
 	params: { countryCode: string };

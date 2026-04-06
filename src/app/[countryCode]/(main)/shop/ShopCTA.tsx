@@ -4,6 +4,7 @@ import React from 'react';
 import Image from 'next/image';
 import { Button } from '@modules/common/components/button';
 import { useRouter } from 'next/navigation';
+import { BEE_MAILBOX_IMAGE_URL } from '@lib/constants';
 
 const ShopCTA = () => {
 	const router = useRouter();
@@ -12,7 +13,8 @@ const ShopCTA = () => {
 			<div className="bg-brown-700 my-40 flex h-[500px] w-full flex-col items-center justify-center gap-5 rounded-3xl md:h-72 md:max-w-4xl md:flex-row">
 				<div className="xs:h-60 xs:w-60 relative h-40 w-40">
 					<Image
-						src="/images/beeMailbox.png"
+						// src="/images/beeMailbox.png"
+						src={BEE_MAILBOX_IMAGE_URL}
 						alt="Mailbox"
 						fill
 						priority

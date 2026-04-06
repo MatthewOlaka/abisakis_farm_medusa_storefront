@@ -1,5 +1,6 @@
 import Image from 'next/image';
 import { Button } from '../button';
+import { BRANCH_IMAGE_URL, CHILLI_IMAGE_URL, HONEY_SPOON_IMAGE_URL } from '@lib/constants';
 
 const ExploreProductsBanner = () => {
 	return (
@@ -7,7 +8,8 @@ const ExploreProductsBanner = () => {
 			{/* Left honey spoon */}
 			<div className="xs:relative xs:h-60 xs:w-52 xs:-mt-10 pointer-events-none absolute z-0 h-32 w-32 select-none">
 				<Image
-					src="/images/honeySpoon.png"
+					// src="/images/honeySpoon.png"
+					src={HONEY_SPOON_IMAGE_URL}
 					alt="Honey Spoon"
 					fill
 					priority
@@ -25,7 +27,8 @@ const ExploreProductsBanner = () => {
 					</h1>
 					<div className="xs:h-20 xs:w-20 absolute z-10 h-12 w-12">
 						<Image
-							src="/images/chilli.png"
+							// src="/images/chilli.png"
+							src={CHILLI_IMAGE_URL}
 							alt="Chilli"
 							fill
 							priority
@@ -45,7 +48,8 @@ const ExploreProductsBanner = () => {
 			{/* Right branch (rotated) */}
 			<div className="xs:relative xs:h-72 xs:w-72 xs:-right-0 pointer-events-none absolute top-0 -right-8 z-0 h-56 w-56 rotate-[60deg] will-change-transform select-none">
 				<Image
-					src="/images/editedBranch.png"
+					// src="/images/editedBranch.png"
+					src={BRANCH_IMAGE_URL}
 					alt="Branch"
 					fill
 					priority

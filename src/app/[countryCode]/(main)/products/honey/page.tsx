@@ -1,5 +1,15 @@
 import FeaturedProducts from '@modules/products/components/featured-products';
+import { Metadata } from 'next';
 import HoneyClient from './HoneyClient';
+
+export const metadata: Metadata = {
+	title: "Honey | Abisaki's Farm",
+	description: 'Pure, raw Kenyan honey harvested with care from Abisaki\'s Farm. Natural, unprocessed, and straight from the hive.',
+	openGraph: {
+		title: "Honey | Abisaki's Farm",
+		description: 'Pure Kenyan honey from Abisaki\'s Farm.',
+	},
+};
 
 type PageProps = {
 	params: { countryCode: string };

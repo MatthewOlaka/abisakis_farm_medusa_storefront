@@ -58,7 +58,7 @@ export default function AlertDialog({
 									<div className="mt-8 flex w-full justify-center">
 										<button
 											onClick={() => router.push('/contact')}
-											className={`inline-flex items-center justify-center rounded-md px-10 py-2 text-xl font-semibold text-white bg-green-900 hover:bg-green-800 border-green-800 border`}
+											className={`inline-flex items-center justify-center rounded-md px-10 py-2 text-md text-white bg-green-900 hover:bg-green-800 border-green-800 border`}
 										>
 											{'Contact Us'}
 										</button>

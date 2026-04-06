@@ -185,7 +185,7 @@ const Footer = () => {
 								}}
 							/>
 						</div> */}
-						<LogoLink wrapperClassname="h-20 w-28 md:h-28 md:w-44" />
+						<LogoLink isWhite wrapperClassname="h-20 w-28 md:h-28 md:w-44" />
 						<h2 className="pointer-events-none text-center font-serif text-lg text-white">
 							Where soil meets soul
 						</h2>
@@ -221,7 +221,7 @@ const Footer = () => {
 							</LocalizedClientLink>
 							<div className="pt-2">
 								<Button
-									text="SHOP"
+									text="Shop"
 									onClick={() => router.push('/shop')}
 									primaryColor={'bg-yellow-500'}
 									secondaryColor={'text-white'}

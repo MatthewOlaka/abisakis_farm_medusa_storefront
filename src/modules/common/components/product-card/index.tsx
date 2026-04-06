@@ -1,5 +1,6 @@
 import Image from 'next/image';
 import React, { useEffect, useRef, useState } from 'react';
+import LocalizedClientLink from '@modules/common/components/localized-client-link';
 
 interface IProps {
 	idx: string;
@@ -69,7 +70,7 @@ const ProductCard = ({
 	};
 
 	return (
-		<a
+		<LocalizedClientLink
 			href={href || '/shop'}
 			className="no-underline"
 			onClick={handleClick}
@@ -151,7 +152,7 @@ const ProductCard = ({
 					</p>
 				</div>
 			</div>
-		</a>
+		</LocalizedClientLink>
 	);
 };
 

@@ -39,17 +39,17 @@ export default function ShopFilters({
 							'transition-all duration-200 focus:outline-none focus-visible:ring-2 focus-visible:ring-amber-400',
 							isActive
 								? 'bg-yellow-500 text-green-900 shadow-sm ring-1 ring-amber-300'
-								: 'bg-yellow-200 text-green-900 hover:bg-yellow-300',
+								: 'bg-yellow-200 text-green-900 hover:bg-amber-400',
 						].join(' ')}
 					>
-						<div className="hidden md:block">
+						<div className="hidden md:flex items-center justify-center max-w-40 max-h-40">
 							<Image
 								src={categoryImages[c]}
 								alt={categoryLabels[c]}
 								width={100}
 								height={100}
 								priority={isActive}
-								className="object-contain pointer-events-none transition-transform duration-200 group-hover:scale-105"
+								className="object-contain pointer-events-none transition-transform duration-200 group-hover:scale-105 h-40 w-36"
 							/>
 						</div>
 						<span className="mt-2 font-serif text-2xl">{categoryLabels[c]}</span>

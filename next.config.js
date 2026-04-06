@@ -12,17 +12,17 @@ const S3_PATHNAME = process.env.MEDUSA_CLOUD_S3_PATHNAME;
  * @type {import('next').NextConfig}
  */
 const nextConfig = {
-	reactStrictMode: false,
+	reactStrictMode: true,
 	logging: {
 		fetches: {
 			fullUrl: true,
 		},
 	},
 	eslint: {
-		ignoreDuringBuilds: true,
+		ignoreDuringBuilds: false,
 	},
 	typescript: {
-		ignoreBuildErrors: true,
+		ignoreBuildErrors: false,
 	},
 	images: {
 		remotePatterns: [
@@ -45,7 +45,7 @@ const nextConfig = {
 			{
 				protocol: 'https',
 				hostname: 'devhzevghepeeyjlabdc.supabase.co',
-				pathname: '/storage/v1/object/public/public-site/**',
+				pathname: '/storage/v1/object/public/**',
 			},
 			...(S3_HOSTNAME && S3_PATHNAME
 				? [

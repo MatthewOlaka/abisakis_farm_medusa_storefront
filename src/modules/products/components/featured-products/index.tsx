@@ -6,6 +6,7 @@ import { getCategoryByHandle } from '@lib/data/categories';
 import { HttpTypes } from '@medusajs/types';
 import Title from '@modules/common/components/title';
 import ItemCard from '../item-card';
+import { isProductOutOfStock } from '@lib/util/product';
 
 type Props = {
 	countryCode: string;
@@ -44,7 +45,7 @@ export default async function FeaturedProducts({
 	if (!category?.id) return null;
 
 	const fields =
-		'id,title,handle,thumbnail,*variants.calculated_price,+variants.inventory_quantity,*tags,+images';
+		'id,title,handle,thumbnail,*variants.calculated_price,+variants.inventory_quantity,+variants.manage_inventory,*tags,+images';
 
 	const { response } = await listProducts({
 		countryCode,
@@ -80,6 +81,7 @@ export default async function FeaturedProducts({
 						imageSrc={p.thumbnail || p.images?.[0]?.url || '/placeholder.svg'}
 						href={`/${countryCode}/products/${p.handle}`}
 						bestSeller={isBestSeller(p)}
+						outOfStock={isProductOutOfStock(p)}
 					/>
 				))}
 			</div>

@@ -2,6 +2,7 @@ import { listProducts } from '@lib/data/products';
 import { getRegion } from '@lib/data/regions';
 import { getCategoryByHandle } from '@lib/data/categories';
 import ItemCard from '@modules/products/components/item-card';
+import { isProductOutOfStock } from '@lib/util/product';
 
 // Accepts Medusa's BaseCalculatedPriceSet-like shape
 function fmt(price?: {
@@ -35,7 +36,8 @@ export default async function ShopGrid({
 	const region = await getRegion(countryCode);
 
 	// Ask for exactly what the Product page needs too (price, tags, images)
-	const fields = 'id,title,handle,thumbnail,*variants.calculated_price,+tags,+images';
+	const fields =
+		'id,title,handle,thumbnail,*variants.calculated_price,+variants.inventory_quantity,+variants.manage_inventory,+tags,+images';
 	const query: Record<string, any> = {
 		fields,
 		limit: 60,
@@ -55,7 +57,7 @@ export default async function ShopGrid({
 	return (
 		<div className="flex w-full justify-center">
 			{/* <div className="mx-auto grid max-w-6xl grid-cols-1 gap-x-10 gap-y-20 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 mt-52"> */}
-			<div className="xs:mt-40 xs:gap-y-32 mt-20 grid grid-cols-1 gap-x-10 gap-y-20 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4l">
+			<div className="xs:mt-40 xs:gap-y-32 mt-20 grid grid-cols-1 gap-x-10 gap-y-20 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
 				{products.map((p) => (
 					<ItemCard
 						key={p.id}
@@ -67,6 +69,7 @@ export default async function ShopGrid({
 						bestSeller={
 							Array.isArray(p.tags) && p.tags.some((t) => t?.value?.toLowerCase() === 'bestseller')
 						}
+						outOfStock={isProductOutOfStock(p)}
 					/>
 				))}
 			</div>

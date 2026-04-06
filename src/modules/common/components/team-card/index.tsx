@@ -39,7 +39,7 @@ const TeamCard = ({ name, title, description, src, isFounder }: IProps) => {
 				alt={`${name} headshot`}
 				fill
 				priority
-				className="mt-2 object-contain"
+				className={isFounder ? 'object-contain' : 'object-cover'}
 				onError={(e) => ((e.target as HTMLImageElement).style.display = 'none')}
 			/>
 

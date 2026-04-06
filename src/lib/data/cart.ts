@@ -116,23 +116,23 @@ export async function addToCart({
 	variantId: string;
 	quantity: number;
 	countryCode: string;
-}) {
+}): Promise<{ error?: string }> {
 	if (!variantId) {
-		throw new Error('Missing variant ID when adding to cart');
+		return { error: 'Missing variant ID when adding to cart' };
 	}
 
-	const cart = await getOrSetCart(countryCode);
+	try {
+		const cart = await getOrSetCart(countryCode);
 
-	if (!cart) {
-		throw new Error('Error retrieving or creating cart');
-	}
+		if (!cart) {
+			return { error: 'Error retrieving or creating cart' };
+		}
 
-	const headers = {
-		...(await getAuthHeaders()),
-	};
+		const headers = {
+			...(await getAuthHeaders()),
+		};
 
-	await sdk.store.cart
-		.createLineItem(
+		await sdk.store.cart.createLineItem(
 			cart.id,
 			{
 				variant_id: variantId,
@@ -140,15 +140,23 @@ export async function addToCart({
 			},
 			{},
 			headers,
-		)
-		.then(async () => {
-			const cartCacheTag = await getCacheTag('carts');
-			revalidateTag(cartCacheTag);
+		);
 
-			const fulfillmentCacheTag = await getCacheTag('fulfillment');
-			revalidateTag(fulfillmentCacheTag);
-		})
-		.catch(medusaError);
+		const cartCacheTag = await getCacheTag('carts');
+		revalidateTag(cartCacheTag);
+
+		const fulfillmentCacheTag = await getCacheTag('fulfillment');
+		revalidateTag(fulfillmentCacheTag);
+
+		return {};
+	} catch (err: any) {
+		const message =
+			err?.response?.data?.message ||
+			err?.response?.data?.error ||
+			err?.message ||
+			'Something went wrong adding to cart';
+		return { error: String(message) };
+	}
 }
 
 export async function updateLineItem({ lineId, quantity }: { lineId: string; quantity: number }) {

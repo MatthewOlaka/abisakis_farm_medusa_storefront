@@ -1,93 +1,81 @@
 'use client';
 
+import {
+	BEE_IMAGE_URL,
+	BRANCH_IMAGE_URL,
+	CHERRY_IMAGE_URL,
+	CHILLI_IMAGE_URL,
+	COFFEE_BAG_1_IMAGE_URL,
+	HERO_IMAGE_URL,
+	HONEY_JAR_IMAGE_URL,
+	MAP_CENTER,
+	MAP_MARKERS,
+	MAP_PERIMETER,
+} from '@lib/constants';
 import useParallax from '@lib/hooks/useParallax';
 import BlobText from '@modules/common/components/blob-text';
 import MapCard from '@modules/common/components/map-card';
 import ProductCard from '@modules/common/components/product-card';
 import ScrollDownIndicator from '@modules/common/components/scroll-down-indicator';
 import Title from '@modules/common/components/title';
+import { useHomeIntro } from '@modules/layout/components/home-intro';
 import { gsap } from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
 import dynamic from 'next/dynamic';
 import Image from 'next/image';
 import { useRouter } from 'next/navigation';
-import { useLayoutEffect, useRef, useState } from 'react';
+import { useEffect, useLayoutEffect, useRef, useState, type SyntheticEvent } from 'react';
 
 // Disable SSR for BlobText to avoid hydration mismatches.
 const BlobTextNoSSR = dynamic(() => import('@modules/common/components/blob-text'), {
 	ssr: false,
 });
 
-const MAP_CENTER = { lat: 0.9941949, lng: 35.1327557 };
-const MAP_PERIMETER = [
-	{ lat: 0.9966, lng: 35.1323 },
-	{ lat: 0.997, lng: 35.1337 },
-	{ lat: 0.9918, lng: 35.1339 },
-	{ lat: 0.9915, lng: 35.1312 },
-];
+// Landing folder
 const MOM_LANDING_IMAGE_URL =
 	'https://devhzevghepeeyjlabdc.supabase.co/storage/v1/object/public/public-site/landing/momLanding.jpeg';
-const MAP_MARKERS = [
-	{
-		title: 'Bee hives',
-		position: { lat: 0.996162, lng: 35.132909 },
-		description: '50 colonized bee hives',
-		imageSrc: '/images/YDcoffeeBag2.png',
-	},
-	{
-		title: 'Cluster 1',
-		position: { lat: 0.995779, lng: 35.132868 },
-		description: 'Processing, roasting',
-		imageSrc: '/images/YDcoffeeBag2.png',
-	},
-	{
-		title: 'Factory',
-		position: { lat: 0.994905, lng: 35.13232 },
-		description: 'Processing, roasting, and packaging hub.',
-		imageSrc: '/images/YDcoffeeBag2.png',
-	},
-	{
-		title: 'Poultry housing',
-		position: { lat: 0.994767, lng: 35.13215 },
-		description: 'Processing, roasting, and packaging hub.',
-		imageSrc: '/images/YDcoffeeBag2.png',
-	},
-	{
-		title: 'Villa',
-		position: { lat: 0.995179, lng: 35.132842 },
-		description: 'Processing, roasting, and packaging hub.',
-		imageSrc: '/images/YDcoffeeBag2.png',
-	},
-	{
-		title: 'Avocado trees',
-		position: { lat: 0.9947, lng: 35.132845 },
-		description: 'Processing, roasting, and packaging hub.',
-		imageSrc: '/images/YDcoffeeBag2.png',
-	},
-	{
-		title: 'Cluster 2',
-		position: { lat: 0.995274, lng: 35.133355 },
-		description: 'Processing, roasting, and packaging hub.',
-		imageSrc: '/images/YDcoffeeBag2.png',
-	},
-	{
-		title: 'Cluster 3',
-		position: { lat: 0.993779, lng: 35.132706 },
-		description: 'Processing, roasting, and packaging hub.',
-		imageSrc: '/images/YDcoffeeBag2.png',
-	},
-	{
-		title: 'Cluster 4',
-		position: { lat: 0.992103, lng: 35.132579 },
-		description: 'Processing, roasting, and packaging hub.',
-		imageSrc: '/images/YDcoffeeBag2.png',
-	},
-];
+const POV_IMAGE_URL =
+	'https://devhzevghepeeyjlabdc.supabase.co/storage/v1/object/public/public-site/landing/POV.jpeg';
+const COFFEE_FARM_IMAGE_URL =
+	'https://devhzevghepeeyjlabdc.supabase.co/storage/v1/object/public/public-site/landing/coffeeFarm.jpeg';
+export const HIVE_IMAGE_URL =
+	'https://devhzevghepeeyjlabdc.supabase.co/storage/v1/object/public/public-site/landing/hive.jpeg';
+const AVOCADO_IMAGE_URL =
+	'https://devhzevghepeeyjlabdc.supabase.co/storage/v1/object/public/public-site/landing/avocado.jpeg';
+const BASKET_IMAGE_URL =
+	'https://devhzevghepeeyjlabdc.supabase.co/storage/v1/object/public/public-site/landing/basket.png';
+const FLOWER_IMAGE_URL =
+	'https://devhzevghepeeyjlabdc.supabase.co/storage/v1/object/public/public-site/landing/flower.png';
+
+const SMILE_1_IMAGE_URL =
+	'https://devhzevghepeeyjlabdc.supabase.co/storage/v1/object/public/public-site/landing/smiles1.png';
+const SMILE_2_IMAGE_URL =
+	'https://devhzevghepeeyjlabdc.supabase.co/storage/v1/object/public/public-site/landing/smiles2.png';
+const SMILE_3_IMAGE_URL =
+	'https://devhzevghepeeyjlabdc.supabase.co/storage/v1/object/public/public-site/landing/smiles3.png';
+
+const GROUP_SMILE_1_IMAGE_URL =
+	'https://devhzevghepeeyjlabdc.supabase.co/storage/v1/object/public/public-site/landing/framedGroupPic.png';
+const GROUP_SMILE_2_IMAGE_URL =
+	'https://devhzevghepeeyjlabdc.supabase.co/storage/v1/object/public/public-site/landing/smiles4.png';
+
+const HOME_INTRO_IMAGE_IDS = [
+	'hero-honey-jar',
+	'hero-chilli',
+	'hero-coffee-bag',
+	'hero-bee-left',
+	'hero-bee-right',
+	'hero-main-image',
+] as const;
 
 // export default function Landing() {
 const Landing = () => {
 	const router = useRouter();
+	const { isActive: isHomeIntroActive, markReady } = useHomeIntro();
 	const [hoveredIdx, setHoveredIdx] = useState<number | null>(null);
+	const introAssetsLoadedRef = useRef<Set<string>>(new Set());
+	const introRevealQueuedRef = useRef(false);
+	const markReadyRef = useRef(markReady);
 
 	const sectionRef = useRef<HTMLDivElement | null>(null);
 	const contentSectionRef = useRef<HTMLDivElement | null>(null);
@@ -124,39 +112,53 @@ const Landing = () => {
 
 	useParallax(contentSectionRef, { selector: '[data-speed]', axis: 'y' });
 
+	useEffect(() => {
+		markReadyRef.current = markReady;
+	}, [markReady]);
+
+	const queueHomeIntroReveal = () => {
+		if (introRevealQueuedRef.current) return;
+
+		introRevealQueuedRef.current = true;
+		requestAnimationFrame(() => {
+			requestAnimationFrame(() => {
+				markReadyRef.current();
+			});
+		});
+	};
+
+	const settleHomeIntroAsset = (assetId: (typeof HOME_INTRO_IMAGE_IDS)[number]) => {
+		if (!isHomeIntroActive || introRevealQueuedRef.current) return;
+
+		introAssetsLoadedRef.current.add(assetId);
+		if (introAssetsLoadedRef.current.size !== HOME_INTRO_IMAGE_IDS.length) return;
+
+		queueHomeIntroReveal();
+	};
+
+	const hideBrokenImage = (event: SyntheticEvent<HTMLImageElement>) => {
+		event.currentTarget.style.display = 'none';
+	};
+
+	useEffect(() => {
+		if (!isHomeIntroActive) return;
+
+		introAssetsLoadedRef.current = new Set();
+		introRevealQueuedRef.current = false;
+
+		const fallbackTimer = window.setTimeout(() => {
+			queueHomeIntroReveal();
+		}, 4500);
+
+		return () => {
+			window.clearTimeout(fallbackTimer);
+		};
+	}, [isHomeIntroActive]);
+
 	useLayoutEffect(() => {
 		gsap.registerPlugin(ScrollTrigger);
 		const ctx = gsap.context(() => {
 			const mm = gsap.matchMedia();
-			// let drawTl: GSAPTimeline | null = null; // keep your map timeline var
-
-			// --- MOBILE: snap straight to final ---
-			// mm.add('(max-width: 767px)', () => {
-			// 	if (
-			// 		!wrapRef.current ||
-			// 		!overlayRef.current ||
-			// 		!ctaRef.current ||
-			// 		!heroText1Ref.current ||
-			// 		!heroText2Ref.current
-			// 	)
-			// 		return;
-
-			// 	gsap.set(wrapRef.current, {
-			// 		// keep width fixed; transforms only
-			// 		scale: 1,
-			// 		y: 0,
-			// 		xPercent: 0,
-			// 		transformPerspective: 800,
-			// 		force3D: true,
-			// 		z: 0.01,
-			// 		willChange: 'transform',
-			// 	});
-			// 	gsap.set(overlayRef.current, { opacity: 0.45 });
-			// 	gsap.set(ctaRef.current, { opacity: 1, y: 0, pointerEvents: 'auto' });
-			// 	gsap.set(heroText1Ref.current, { autoAlpha: 0 });
-			// 	gsap.set(heroText1MobileRef.current, { opacity: 0 });
-			// 	gsap.set(heroText2Ref.current, { y: '22vh', opacity: 1 });
-			// });
 
 			// --- DESKTOP: smooth pinned scene ---
 			mm.add('(min-width: 1px)', () => {
@@ -367,32 +369,47 @@ const Landing = () => {
 				<div className="flex">
 					<div className="-mt-24 xs:-mt-40 h-40 right-[120px] xs:h-52 md:h-64 xs:right-48 md:right-60 absolute z-10 w-full will-change-transform">
 						<Image
-							src="/images/honeyJar1.png"
+							// src="/images/honeyJar1.png"
+							src={HONEY_JAR_IMAGE_URL}
 							alt="Honey Jar"
 							fill
 							priority
 							className="object-contain -rotate-12"
-							onError={(e) => ((e.target as HTMLImageElement).style.display = 'none')}
+							onLoad={() => settleHomeIntroAsset('hero-honey-jar')}
+							onError={(event) => {
+								hideBrokenImage(event);
+								settleHomeIntroAsset('hero-honey-jar');
+							}}
 						/>
 					</div>
 					<div className="-mt-14 xs:-mt-16 md:-mt-14 h-16 xs:h-20 md:h-24 right-2 md:right-0 absolute w-full will-change-transform">
 						<Image
-							src="/images/chilli.png"
+							// src="/images/chilli.png"
+							src={CHILLI_IMAGE_URL}
 							alt="Chilli"
 							fill
 							priority
 							className="object-contain rotate-12"
-							onError={(e) => ((e.target as HTMLImageElement).style.display = 'none')}
+							onLoad={() => settleHomeIntroAsset('hero-chilli')}
+							onError={(event) => {
+								hideBrokenImage(event);
+								settleHomeIntroAsset('hero-chilli');
+							}}
 						/>
 					</div>
 					<div className="-mt-32 xs:-mt-44 md:-mt-48 h-56 w-32 ml-64 xs:h-56 md:h-72 xs:w-60 xs:ml-[400px] md:ml-[500px] z-10 will-change-transform overflow-x-clip">
 						<Image
-							src="/images/YDcoffeeBag1.png"
+							// src="/images/YDcoffeeBag1.png"
+							src={COFFEE_BAG_1_IMAGE_URL}
 							alt="Coffee Bag"
 							fill
 							priority
 							className="object-contain rotate-12 mr-96"
-							onError={(e) => ((e.target as HTMLImageElement).style.display = 'none')}
+							onLoad={() => settleHomeIntroAsset('hero-coffee-bag')}
+							onError={(event) => {
+								hideBrokenImage(event);
+								settleHomeIntroAsset('hero-coffee-bag');
+							}}
 						/>
 					</div>
 				</div>
@@ -405,12 +422,17 @@ const Landing = () => {
 				<div className="flex w-full justify-center">
 					<div className="motion-safe:animate-levitate mt-5 md:mt-10 mr-72 md:mr-[650px] absolute h-10 w-10 md:w-16 md:h-16 will-change-transform">
 						<Image
-							src="/images/bee.png"
+							// src="/images/bee.png"
+							src={BEE_IMAGE_URL}
 							alt="Bee 1"
 							fill
 							priority
 							className="object-cover"
-							onError={(e) => ((e.target as HTMLImageElement).style.display = 'none')}
+							onLoad={() => settleHomeIntroAsset('hero-bee-left')}
+							onError={(event) => {
+								hideBrokenImage(event);
+								settleHomeIntroAsset('hero-bee-left');
+							}}
 						/>
 					</div>
 					{/* <p>Bar</p> */}
@@ -419,12 +441,17 @@ const Landing = () => {
 						style={{ animationDelay: '0.5s' }}
 					>
 						<Image
-							src="/images/bee.png"
+							// src="/images/bee.png"
+							src={BEE_IMAGE_URL}
 							alt="Bee 2"
 							fill
 							priority
 							className="object-cover scale-x-[-1]"
-							onError={(e) => ((e.target as HTMLImageElement).style.display = 'none')}
+							onLoad={() => settleHomeIntroAsset('hero-bee-right')}
+							onError={(event) => {
+								hideBrokenImage(event);
+								settleHomeIntroAsset('hero-bee-right');
+							}}
 						/>
 					</div>
 				</div>
@@ -441,12 +468,17 @@ const Landing = () => {
 					>
 						<Image
 							ref={imgRef}
-							src="/images/Hero.jpg"
+							// src="/images/Hero.jpg"
+							src={HERO_IMAGE_URL}
 							alt="Hero"
 							fill
 							priority
 							className="object-cover rounded-lg"
-							onError={(e) => ((e.target as HTMLImageElement).style.display = 'none')}
+							onLoad={() => settleHomeIntroAsset('hero-main-image')}
+							onError={(event) => {
+								hideBrokenImage(event);
+								settleHomeIntroAsset('hero-main-image');
+							}}
 						/>
 						{/* Overlay that fades in during scroll */}
 						<div
@@ -493,7 +525,8 @@ const Landing = () => {
 					<div className="flex w-full justify-end">
 						<div className="xs:-mt-[100px] xs:mr-16 xs:h-[450px] xs:w-64 absolute z-50 mt-[550px] mr-0 flex h-[350px] w-full overflow-hidden">
 							<Image
-								src="/images/editedBranch.png"
+								// src="/images/editedBranch.png"
+								src={BRANCH_IMAGE_URL}
 								alt="Branch"
 								fill
 								priority
@@ -526,7 +559,8 @@ const Landing = () => {
 							className="xs:scale-50 xs:-mt-40 xs:mr-32 absolute top-0 right-0 z-50 mt-[400px] mr-32 h-16 w-16 scale-40"
 						>
 							<Image
-								src="/images/cherry.png"
+								// src="/images/cherry.png"
+								src={CHERRY_IMAGE_URL}
 								alt="Cherry 1"
 								fill
 								priority
@@ -539,7 +573,8 @@ const Landing = () => {
 							className="xs:scale-50 xs:mt-52 xs:mr-20 absolute top-0 right-0 z-50 mt-[620px] mr-10 h-16 w-16 scale-40"
 						>
 							<Image
-								src="/images/cherry.png"
+								// src="/images/cherry.png"
+								src={CHERRY_IMAGE_URL}
 								alt="Cherry 2"
 								fill
 								priority
@@ -552,7 +587,8 @@ const Landing = () => {
 							className="xs:scale-50 xs:mr-36 xs:mb-52 absolute right-0 bottom-0 z-100 mr-20 -mb-52 h-16 w-16 scale-40"
 						>
 							<Image
-								src="/images/cherry.png"
+								// src="/images/cherry.png"
+								src={CHERRY_IMAGE_URL}
 								alt="Cherry 3"
 								fill
 								priority
@@ -584,9 +620,10 @@ const Landing = () => {
 								className="xs:mt-80 ml-20 flex w-full justify-center md:mt-96"
 							/>
 						</div>
-						<div className="xs:mt-10 h-52 w-[250px] xs:h-72 xs:w-[350px] xlarge:w-[450px] xlarge:h-96 absolute right-0 mr-0 z-50 mt-[600px] flex -translate-y-1/2 justify-end">
+						<div className="xs:mt-10 h-52 w-[250px] xs:h-80 xs:w-[390px] xlarge:w-[450px] xlarge:h-96 absolute right-0 mr-0 z-50 mt-[600px] flex -translate-y-1/2 justify-end">
 							<Image
-								src="/images/finalBasket.png"
+								// src="/images/finalBasket.png"
+								src={BASKET_IMAGE_URL}
 								alt="Coffee Basket"
 								fill
 								priority
@@ -601,7 +638,8 @@ const Landing = () => {
 							className="xs:h-72 xs:w-52 absolute z-50 h-60 w-44 -rotate-3 mt-[450px] xs:mt-[90px] md:-mt-10 md:h-[400px] md:w-[300px] xl:ml-16"
 						>
 							<Image
-								src="/images/POV.jpg"
+								// src="/images/POV.jpg"
+								src={POV_IMAGE_URL}
 								alt="POV"
 								fill
 								priority
@@ -623,7 +661,8 @@ const Landing = () => {
 								className="xs:left-auto xs:right-0 absolute right-0 bottom-0 left-5 z-50 h-52 w-52 xs:h-60 xs:w-60 md:h-72 md:w-72"
 							>
 								<Image
-									src="/images/flower.png"
+									// src="/images/flower.png"
+									src={FLOWER_IMAGE_URL}
 									alt="Flower"
 									fill
 									priority
@@ -636,7 +675,8 @@ const Landing = () => {
 								className="motion-safe:animate-levitate xs:left-auto xs:right-0 md:h-15 md:w-16 h-10 w-10 absolute right-0 bottom-0 left-5 z-50 will-change-transform"
 							>
 								<Image
-									src="/images/bee.png"
+									// src="/images/bee.png"
+									src={BEE_IMAGE_URL}
 									alt="Bee 1"
 									fill
 									priority
@@ -650,7 +690,8 @@ const Landing = () => {
 								className="motion-safe:animate-levitate xs:left-auto xs:right-0 md:h-20 md:w-20 absolute right-0 bottom-0 left-0 z-50 h-10 w-10 will-change-transform"
 							>
 								<Image
-									src="/images/bee.png"
+									// src="/images/bee.png"
+									src={BEE_IMAGE_URL}
 									alt="Bee 2"
 									fill
 									priority
@@ -679,7 +720,8 @@ const Landing = () => {
 								className="h-[410px] w-full md:h-[460px] md:w-[250px] lg:h-[680px] lg:w-[350px] absolute right-20 md:right-0 md:left-10 mt-[810px] md:mt-[1000px] z-20"
 							>
 								<Image
-									src="/images/smiles.png"
+									// src="/images/smiles.png"
+									src={SMILE_1_IMAGE_URL}
 									alt="smiles"
 									fill
 									priority
@@ -694,7 +736,8 @@ const Landing = () => {
 									data-speed="-0.225"
 								>
 									<Image
-										src="/images/smiles-3.png"
+										// src="/images/smiles-3.png"
+										src={SMILE_3_IMAGE_URL}
 										alt="smiles"
 										fill
 										priority
@@ -712,7 +755,8 @@ const Landing = () => {
 								className="h-[450px] w-full md:h-[460px] md:w-[250px] lg:h-[680px] lg:w-[350px] absolute right-0 md:right-10 mt-[740px] md:mt-[550px] z-50 md:z-10"
 							>
 								<Image
-									src="/images/smiles-2.png"
+									// src="/images/smiles-2.png"
+									src={SMILE_2_IMAGE_URL}
 									alt="smiles"
 									fill
 									priority
@@ -974,7 +1018,8 @@ const Landing = () => {
 							className="h-56 w-[90vw] max-w-96 xs:h-[480px] xs:max-w-[680px] xs:-ml-5 absolute left-1/2 -translate-x-1/2 mt-[1300px] z-10 overflow-clip"
 						>
 							<Image
-								src="/images/framed-group-pic-2.png"
+								// src="/images/framed-group-pic-2.png"
+								src={GROUP_SMILE_1_IMAGE_URL}
 								alt="Group Picture"
 								fill
 								priority
@@ -990,7 +1035,8 @@ const Landing = () => {
 							className="h-56 w-[92vw] max-w-[450px] xs:h-[450px] xs:max-w-[750px] absolute left-1/2 -translate-x-1/2 z-50 -mt-[800px] overflow-clip "
 						>
 							<Image
-								src="/images/smiles-4.png"
+								// src="/images/smiles-4.png"
+								src={GROUP_SMILE_2_IMAGE_URL}
 								alt="Smiles"
 								fill
 								priority
@@ -1004,7 +1050,10 @@ const Landing = () => {
 				<Title title="Interactive Map" wrapperClass="xs:mt-80 pb-16 text-center" />
 				<div className="mt-2 rounded-2xl border-3 border-yellow-500 w-full max-w-5xl px-2">
 					<div className="flex w-full justify-end">
-						<p className="text-lg md:text-xl font-serif text-green-900">Click on markers</p>
+						<div className="flex">
+							<p className="text-xl md:text-2xl font-serif text-green-900">Click on markers</p>
+							<span className="text-xl md:text-2xl font-serif !text-red-600">*</span>
+						</div>
 					</div>
 					<MapCard
 						center={MAP_CENTER}
@@ -1036,7 +1085,8 @@ const Landing = () => {
 								<ProductCard
 									idx="01"
 									title="Coffee Farming"
-									src="/images/coffeeFarm.jpg"
+									// src="/images/coffeeFarm.jpg"
+									src={COFFEE_FARM_IMAGE_URL}
 									active={hoveredIdx === 0}
 									onHoverChange={(h) => setHoveredIdx(h ? 0 : null)}
 									href="/products/coffee"
@@ -1044,7 +1094,8 @@ const Landing = () => {
 								<ProductCard
 									idx="02"
 									title="Beekeeping"
-									src="/images/hive.jpg"
+									// src="/images/hive.jpg"
+									src={HIVE_IMAGE_URL}
 									active={hoveredIdx === 1}
 									onHoverChange={(h) => setHoveredIdx(h ? 1 : null)}
 									wrapperClass="md:-mt-5"
@@ -1053,7 +1104,8 @@ const Landing = () => {
 								<ProductCard
 									idx="03"
 									title="Misc Products"
-									src="/images/avocado.jpg"
+									// src="/images/avocado.jpg"
+									src={AVOCADO_IMAGE_URL}
 									active={hoveredIdx === 2}
 									onHoverChange={(h) => setHoveredIdx(h ? 2 : null)}
 									href="/shop?c=more"
@@ -1062,13 +1114,12 @@ const Landing = () => {
 						</div>
 					</div>
 				</section>
-				<div className="xs:h-[1100px] flex h-[800px] w-full justify-center overflow-x-hidden overflow-y-clip">
+				<div className="xs:h-[900px] flex h-[800px] w-full justify-center overflow-x-hidden overflow-y-clip xs:mt-20">
 					<BlobTextNoSSR
 						title="We'd love to hear from you..."
 						description="Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation"
 						style="contact-us"
 						heading="Contact Us"
-						scale="scale-470"
 						className="flex w-full justify-center"
 						staticId="contact-us-blob" // ensure a fixed ID is passed
 					/>

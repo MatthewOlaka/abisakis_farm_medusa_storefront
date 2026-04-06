@@ -73,7 +73,8 @@
 import { listProducts } from '@lib/data/products';
 import { getRegion } from '@lib/data/regions';
 import { HttpTypes } from '@medusajs/types';
-import ItemCard from '../item-card'; // ⬅️ adjust path if needed
+import ItemCard from '../item-card';
+import { isProductOutOfStock } from '@lib/util/product';
 
 type RelatedProductsProps = {
 	product: HttpTypes.StoreProduct;
@@ -104,7 +105,7 @@ export default async function RelatedProducts({ product, countryCode }: RelatedP
 		limit: 8,
 		// keep fields minimal like your working version
 		fields:
-			'id,title,handle,thumbnail,*variants.calculated_price,+variants.inventory_quantity,*tags',
+			'id,title,handle,thumbnail,*variants.calculated_price,+variants.inventory_quantity,+variants.manage_inventory,*tags',
 	};
 
 	const catId = product.categories?.[0]?.id;
@@ -141,7 +142,7 @@ export default async function RelatedProducts({ product, countryCode }: RelatedP
 								imageSrc={p.thumbnail || '/placeholder.svg'}
 								href={`/${countryCode}/products/${p.handle}`}
 								bestSeller={isBestSeller(p)}
-								// bestSeller={p.tags?.some((tag) => tag.value === 'bestseller')}
+								outOfStock={isProductOutOfStock(p)}
 							/>
 						</li>
 					))}
@@ -162,6 +163,7 @@ export default async function RelatedProducts({ product, countryCode }: RelatedP
 							imageSrc={p.thumbnail || '/placeholder.svg'}
 							href={`/${countryCode}/products/${p.handle}`}
 							bestSeller={isBestSeller(p)}
+							outOfStock={isProductOutOfStock(p)}
 						/>
 					</li>
 				))}

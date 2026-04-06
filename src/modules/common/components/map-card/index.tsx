@@ -183,7 +183,7 @@ export default function MapCard({
 					>
 						×
 					</button>
-					<div className="flex min-h-[180px] gap-3 pr-5">
+					<div className="flex min-h-[160px] gap-3 pr-5">
 						{activeSpot.imageSrc ? (
 							<Image
 								src={activeSpot.imageSrc}
@@ -199,7 +199,7 @@ export default function MapCard({
 								{activeSpot.title}
 							</h3>
 							{activeSpot.description ? (
-								<p className="text-sm leading-6 text-gray-700">{activeSpot.description}</p>
+								<p className="text-xs leading-6 text-gray-700">{activeSpot.description}</p>
 							) : null}
 						</div>
 					</div>

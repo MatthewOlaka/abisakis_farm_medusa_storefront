@@ -5,9 +5,11 @@ import { Heading } from '@medusajs/ui';
 import CartTotals from '@modules/common/components/cart-totals';
 import Divider from '@modules/common/components/divider';
 import DiscountCode from '@modules/checkout/components/discount-code';
-import LocalizedClientLink from '@modules/common/components/localized-client-link';
+import _LocalizedClientLink from '@modules/common/components/localized-client-link';
 import { HttpTypes } from '@medusajs/types';
 import { Button } from '@modules/common/components/button';
+import { convertToLocale } from '@lib/util/money';
+import { faWhatsapp } from '@fortawesome/free-brands-svg-icons';
 
 type SummaryProps = {
 	cart: HttpTypes.StoreCart & {
@@ -25,8 +27,35 @@ function getCheckoutStep(cart: HttpTypes.StoreCart) {
 	}
 }
 
+function WhatsAppInquiryButton({ cart }: { cart: HttpTypes.StoreCart }) {
+	const message = `Hi! I'd like to order the following items:\n\n${cart.items
+		?.map(
+			(item) =>
+				`- ${item.product_title} (x${item.quantity}) \u2014 ${cart.currency_code.toUpperCase()} ${item.unit_price}`,
+		)
+		.join(
+			'\n',
+		)}\n\nSubtotal: ${convertToLocale({ amount: cart.subtotal ?? 0, currency_code: cart.currency_code })}`;
+
+	return (
+		<a
+			href={`https://wa.me/12368824656?text=${encodeURIComponent(message)}`}
+			target="_blank"
+			rel="noopener noreferrer"
+			className="w-full"
+		>
+			<Button
+				wrapperClass="px-6 py-2 !text-white font-semibold xs:mb-8 rounded-lg border border-green-700 w-full"
+				primaryColor="bg-green-800 hover:bg-green-700"
+				text="Inquire via WhatsApp"
+				icon={faWhatsapp}
+			/>
+		</a>
+	);
+}
+
 const Summary = ({ cart }: SummaryProps) => {
-	const step = getCheckoutStep(cart);
+	const _step = getCheckoutStep(cart);
 
 	return (
 		<div className="flex flex-col gap-y-4">
@@ -36,14 +65,15 @@ const Summary = ({ cart }: SummaryProps) => {
 			<DiscountCode cart={cart} />
 			<Divider />
 			<CartTotals totals={cart} />
-			<LocalizedClientLink href={'/checkout?step=' + step} data-testid="checkout-button">
-				{/* <Button className="w-full h-10">Go to checkout</Button> */}
+			{/* TODO: Re-enable once checkout is complete */}
+			{/* <LocalizedClientLink href={'/checkout?step=' + step} data-testid="checkout-button">
 				<Button
 					wrapperClass="px-6 py-2 !text-green-900 font-semibold xs:mb-8 rounded-lg border border-amber-300 w-full"
 					primaryColor="bg-yellow-400 hover:bg-yellow-400/70"
 					text="Go to checkout"
 				/>
-			</LocalizedClientLink>
+			</LocalizedClientLink> */}
+			<WhatsAppInquiryButton cart={cart} />
 		</div>
 	);
 };

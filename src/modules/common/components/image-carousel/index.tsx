@@ -243,7 +243,7 @@ export default function ImageCarousel({ title = 'Our Techniques', slides, classN
 					{slides[index]?.name}
 				</h2>
 				<div className="mt-3 xs:mt-5 flex w-full justify-center">
-					<p className="max-w-[550px] px-10 font-sans text-sm xs:text-lg text-green-900 md:max-w-[650px] md:px-0 md:font-semibold">
+					<p className="max-w-[550px] px-10 font-sans text-sm xs:text-lg text-green-900 md:max-w-[650px] md:px-0">
 						{slides[index]?.description}
 					</p>
 				</div>

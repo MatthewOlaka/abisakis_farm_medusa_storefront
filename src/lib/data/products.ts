@@ -60,12 +60,12 @@ export const listProducts = async ({
 				limit,
 				offset,
 				region_id: region?.id,
-				fields: '*variants.calculated_price,+variants.inventory_quantity,+metadata,+tags',
+				fields: '*variants.calculated_price,+variants.inventory_quantity,+variants.manage_inventory,+metadata,+tags',
 				...queryParams,
 			},
 			headers,
 			next,
-			cache: 'force-cache',
+			cache: 'no-store',
 		})
 		.then(({ products, count }) => {
 			const nextPage = count > offset + limit ? pageParam + 1 : null;

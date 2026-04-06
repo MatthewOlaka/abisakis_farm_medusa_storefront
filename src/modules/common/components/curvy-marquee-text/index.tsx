@@ -2,7 +2,7 @@
 'use client';
 
 import { gsap } from 'gsap';
-import { useId, useLayoutEffect, useRef } from 'react';
+import { useLayoutEffect, useMemo, useRef } from 'react';
 
 type Dir = 'left' | 'right';
 
@@ -25,7 +25,16 @@ export default function CurvyMarqueeText({
 	curveHeight = 60,
 	stroke,
 }: Props) {
-	const pathId = useId().replace(/:/g, '');
+	const pathId = useMemo(() => {
+		const seed = `${text}|${direction}|${fontSize}|${curveHeight}|${className}`;
+		let hash = 5381;
+
+		for (let i = 0; i < seed.length; i += 1) {
+			hash = (hash * 33) ^ seed.charCodeAt(i);
+		}
+
+		return `curvy-path-${Math.abs(hash >>> 0).toString(36)}`;
+	}, [text, direction, fontSize, curveHeight, className]);
 	const pathRef = useRef<SVGPathElement | null>(null);
 	const textPathRef = useRef<SVGTextPathElement | null>(null);
 

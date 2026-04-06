@@ -1,5 +1,6 @@
 import { listProducts } from '@lib/data/products';
 import { getRegion, listRegions } from '@lib/data/regions';
+import ProductJsonLd from '@modules/common/components/json-ld/product';
 import RelatedProducts from '@modules/products/components/related-products';
 import ProductClient from '@modules/products/prod';
 import SkeletonRelatedProducts from '@modules/skeletons/templates/skeleton-related-products';
@@ -55,7 +56,6 @@ export async function generateStaticParams() {
 
 export async function generateMetadata(props: Props): Promise<Metadata> {
 	const params = await props.params;
-	console.log('params :', params);
 	const { handle } = params;
 	const region = await getRegion(params.countryCode);
 
@@ -73,10 +73,10 @@ export async function generateMetadata(props: Props): Promise<Metadata> {
 	}
 
 	return {
-		title: `${product.title} | Medusa Store`,
+		title: `${product.title} | Abisaki's Farm`,
 		description: `${product.title}`,
 		openGraph: {
-			title: `${product.title} | Medusa Store`,
+			title: `${product.title} | Abisaki's Farm`,
 			description: `${product.title}`,
 			images: product.thumbnail ? [product.thumbnail] : [],
 		},
@@ -111,12 +111,14 @@ export default async function ProductPage(props: Props) {
 	);
 
 	return (
-		// <ProductTemplate product={pricedProduct} region={region} countryCode={params.countryCode} />
-		<ProductClient
-			product={pricedProduct}
-			region={region}
-			countryCode={params.countryCode}
-			relatedProducts={relatedNode}
-		/>
+		<>
+			<ProductJsonLd product={pricedProduct} countryCode={params.countryCode} />
+			<ProductClient
+				product={pricedProduct}
+				region={region}
+				countryCode={params.countryCode}
+				relatedProducts={relatedNode}
+			/>
+		</>
 	);
 }

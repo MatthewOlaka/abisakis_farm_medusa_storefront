@@ -5,90 +5,114 @@ import useParallax from '@lib/hooks/useParallax';
 import CurvyScrollPipe from '@modules/common/components/curvy-scroll-pipe';
 import ExploreProductsBanner from '@modules/common/components/explore-products-banner';
 import ImageCarousel from '@modules/common/components/image-carousel';
+import { useHomeIntro } from '@modules/layout/components/home-intro';
 import TimelineText from '@modules/common/components/timeline-text';
 import { gsap } from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
 import Image from 'next/image';
 import ScrollDownIndicator from '@modules/common/components/scroll-down-indicator';
+import { CHERRY_IMAGE_URL, COFFEE_BAG_2_IMAGE_URL, COFFEE_BEAN_IMAGE_URL, COFFEE_MUG_IMAGE_URL, ROASTED_BEANS_IMAGE_URL } from '@lib/constants';
+
+const STAGE_1_IMAGE_URL =
+	'https://devhzevghepeeyjlabdc.supabase.co/storage/v1/object/public/public-site/coffee/steps/coffee-stage1.jpg';
+const STAGE_2_IMAGE_URL =
+	'https://devhzevghepeeyjlabdc.supabase.co/storage/v1/object/public/public-site/coffee/steps/coffee-stage2.jpg';
+const STAGE_3_IMAGE_URL =
+	'https://devhzevghepeeyjlabdc.supabase.co/storage/v1/object/public/public-site/coffee/steps/coffee-stage3.jpg';
+// const STAGE_4_IMAGE_URL =
+// 	'https://devhzevghepeeyjlabdc.supabase.co/storage/v1/object/public/public-site/coffee/steps/coffee-stage4.jpg';
+const STAGE_4_IMAGE_URL =
+	'https://devhzevghepeeyjlabdc.supabase.co/storage/v1/object/public/public-site/coffee/steps/coffee-stage4v3.jpg';
+
+const COFFEE_INTRO_IMAGE_IDS = [
+	'coffee-title-cherry',
+	'coffee-title-beans',
+	'coffee-mug',
+	'coffee-bag',
+] as const;
 
 const slides = [
 	{
-		name: 'Speciality Coffee',
+		name: 'Selective Picking',
 		description:
-			'Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.',
-		src: '/images/Hero.jpg',
+			'Only fully ripe cherries are picked by hand during harvest. Careful selection ensures balanced sweetness and quality. Each pass through the trees focuses on maturity, protecting flavor and preserving the character of every coffee lot.',
+		src: 'https://devhzevghepeeyjlabdc.supabase.co/storage/v1/object/public/public-site/coffee/slideshow/selectivePicking.jpg',
 	},
 	{
-		name: 'Anaerobic Coffee',
+		name: 'Healthy Coffee Trees',
 		description:
-			'Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.',
-		src: '/images/Hero.jpg',
+			'Strong coffee begins with healthy plants. We monitor soil conditions, prune trees, and manage pests responsibly to protect growth. Regular field care supports resilient plants, consistent yields, and cherries that develop deeper flavor.',
+		src: 'https://devhzevghepeeyjlabdc.supabase.co/storage/v1/object/public/public-site/coffee/slideshow/healthyTree.jpeg',
 	},
 	{
-		name: 'Cherry Dilation',
+		name: 'Careful Pulping',
 		description:
-			'Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.',
-		src: '/images/Hero.jpg',
+			'After harvest, cherries are pulped to separate the beans from fruit. Timing matters here. Gentle handling prevents damage and prepares the beans for fermentation while preserving the natural qualities developed on the tree.',
+		src: 'https://devhzevghepeeyjlabdc.supabase.co/storage/v1/object/public/public-site/coffee/slideshow/carefulPulping.jpg',
 	},
 	{
-		name: 'Drying Beds',
+		name: 'Slow Drying Beds',
 		description:
-			'Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.',
-		src: '/images/Hero.jpg',
+			'Beans dry slowly on raised beds where airflow and sunlight work together. Regular turning ensures even drying and prevents spoilage. This patient process helps stabilize the beans and lock in their natural flavors.',
+		src: 'https://devhzevghepeeyjlabdc.supabase.co/storage/v1/object/public/public-site/coffee/slideshow/dryingBed.jpg',
 	},
 	{
-		name: 'Pulped to Perfection',
+		name: 'Thoughtful Processing',
 		description:
-			'Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.',
-		src: '/images/Hero.jpg',
+			'Processing methods vary depending on the variety and desired profile. Some coffees are washed, others natural or fermented. Each method highlights different characteristics, allowing the beans to express their unique flavors.',
+		src: 'https://devhzevghepeeyjlabdc.supabase.co/storage/v1/object/public/public-site/coffee/slideshow/processing.jpg',
 	},
 	{
-		name: 'Washed spotless',
+		name: 'Protected Storage',
 		description:
-			'Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.',
-		src: '/images/Hero.jpg',
+			'Once dried, coffee is stored carefully in clean, ventilated spaces. Proper storage protects the beans from moisture, pests, and damage while allowing them to rest before roasting and preparation for export or brewing.',
+		src: 'https://devhzevghepeeyjlabdc.supabase.co/storage/v1/object/public/public-site/coffee/slideshow/storage.jpg',
+	},
+	{
+		name: 'Plant Care & Maintenance',
+		description:
+			'Healthy coffee requires constant care. Our team monitors plant health and occasionally applies safe, approved treatments that protect the trees from pests and disease. These gentle measures help the plants thrive and produce strong, flavorful cherries.',
+		src: 'https://devhzevghepeeyjlabdc.supabase.co/storage/v1/object/public/public-site/coffee/slideshow/plantCare.jpg',
 	},
 ];
 
 const varieties = [
 	{
-		title: 'Amber Honey Process',
-		description: 'Slow-dried whole cherries for bright stone-fruit notes and syrupy body.',
-		src: '/images/Hero.jpg',
-		height: 240,
-		tag: 'Limited release',
-	},
-	{
-		title: 'Sunrise Peaberry',
-		description: 'Tight screen peaberries with citrus aromatics and a delicate finish.',
-		src: '/images/YDcoffeeBag2.png',
-		height: 220,
-		tag: 'Estate lot',
-	},
-	{
-		title: 'Evergreen Washed',
-		description: 'Washed and patio-dried for clean sweetness and a crisp, tea-like body.',
-		src: '/images/coffeeFarm.jpg',
+		title: 'Washed Process',
+		description:
+			'Cherries are pulped and carefully washed before drying, producing a clean, vibrant cup with bright acidity, delicate floral aromas, and a crisp finish that highlights the bean’s natural clarity.',
+		src: 'https://devhzevghepeeyjlabdc.supabase.co/storage/v1/object/public/public-site/coffee/varieties/washed.jpg',
 		height: 260,
 		tag: 'Signature',
 	},
 	{
-		title: 'Midnight Anaerobic',
-		description: 'Dark berry aromatics and deep complexity from extended tank time.',
-		src: '/images/coffeeMug.png',
+		title: 'Honey Process',
+		description:
+			'Partially pulped beans dry with sticky mucilage intact, creating natural sweetness, smooth body, and gentle fruit notes while preserving the balance between bright acidity and rich caramel-like depth.',
+		src: 'https://devhzevghepeeyjlabdc.supabase.co/storage/v1/object/public/public-site/coffee/varieties/honies.jpg',
 		height: 240,
-		tag: 'Micro-lot',
+		tag: 'Estate lot',
 	},
 	{
-		title: 'Hillside Natural',
-		description: 'Sun-dried on raised beds—jammy sweetness with cocoa undertones.',
-		src: '/images/roastedBeans.png',
-		height: 230,
+		title: 'Natural Process',
+		description:
+			'Whole cherries dry slowly under the sun on raised beds, allowing the beans to absorb fruit sugars and develop bold berry notes, heavier body, and a rounded sweetness.',
+		src: 'https://devhzevghepeeyjlabdc.supabase.co/storage/v1/object/public/public-site/coffee/varieties/natural.jpg',
+		height: 220,
 		tag: 'Single origin',
+	},
+	{
+		title: 'Anaerobic Fermentation',
+		description:
+			'Cherries ferment in sealed tanks without oxygen, creating complex flavors, deep fruit notes, and layered sweetness while enhancing aroma and body through controlled fermentation.',
+		src: 'https://devhzevghepeeyjlabdc.supabase.co/storage/v1/object/public/public-site/coffee/varieties/anaerobic.jpg',
+		height: 240,
+		tag: 'Micro-lot',
 	},
 ];
 
 export default function CoffeeClient({ featured }: { featured: React.ReactNode }) {
+	const { isActive: isIntroActive, markReady } = useHomeIntro();
 	const bagWrapRef = useRef<HTMLDivElement | null>(null);
 	const mugWrapRef = useRef<HTMLDivElement | null>(null);
 	const bean1WrapRef = useRef<HTMLDivElement | null>(null);
@@ -100,10 +124,52 @@ export default function CoffeeClient({ featured }: { featured: React.ReactNode }
 	const [canPrevVariety, setCanPrevVariety] = useState(false);
 	const [canNextVariety, setCanNextVariety] = useState(true);
 	const [isSmallScreen, setIsSmallScreen] = useState(false);
+	const introAssetsLoadedRef = useRef<Set<string>>(new Set());
+	const introRevealQueuedRef = useRef(false);
+	const markReadyRef = useRef(markReady);
 
 	const pipeStarted = useRef(false);
 
 	useParallax(scopeRef, { selector: '[data-speed]', axis: 'y' });
+
+	useEffect(() => {
+		markReadyRef.current = markReady;
+	}, [markReady]);
+
+	const queueIntroReveal = () => {
+		if (introRevealQueuedRef.current) return;
+
+		introRevealQueuedRef.current = true;
+		requestAnimationFrame(() => {
+			requestAnimationFrame(() => {
+				markReadyRef.current();
+			});
+		});
+	};
+
+	const settleIntroAsset = (assetId: (typeof COFFEE_INTRO_IMAGE_IDS)[number]) => {
+		if (!isIntroActive || introRevealQueuedRef.current) return;
+
+		introAssetsLoadedRef.current.add(assetId);
+		if (introAssetsLoadedRef.current.size !== COFFEE_INTRO_IMAGE_IDS.length) return;
+
+		queueIntroReveal();
+	};
+
+	useEffect(() => {
+		if (!isIntroActive) return;
+
+		introAssetsLoadedRef.current = new Set();
+		introRevealQueuedRef.current = false;
+
+		const fallbackTimer = window.setTimeout(() => {
+			queueIntroReveal();
+		}, 4500);
+
+		return () => {
+			window.clearTimeout(fallbackTimer);
+		};
+	}, [isIntroActive]);
 
 	useEffect(() => {
 		const mediaQuery = window.matchMedia('(max-width: 479px)');
@@ -434,13 +500,18 @@ export default function CoffeeClient({ featured }: { featured: React.ReactNode }
 						<div className="flex items-start">
 							<div className="absolute top-2 h-10 w-10 items-end md:h-15 md:w-15">
 								<Image
-									src="/images/cherry.png"
+									// src="/images/cherry.png"
+									src={CHERRY_IMAGE_URL}
 									alt="Cherry"
 									fill
 									priority
 									sizes="(max-width: 768px) 40px, 60px"
 									className="object-cover"
-									onError={(e) => ((e.target as HTMLImageElement).style.display = 'none')}
+									onLoad={() => settleIntroAsset('coffee-title-cherry')}
+									onError={(e) => {
+										(e.target as HTMLImageElement).style.display = 'none';
+										settleIntroAsset('coffee-title-cherry');
+									}}
 								/>
 							</div>
 						</div>
@@ -450,13 +521,18 @@ export default function CoffeeClient({ featured }: { featured: React.ReactNode }
 						<div className="flex items-end">
 							<div className="relative top-2 -ml-10 h-20 w-20 items-end md:h-25 md:w-30">
 								<Image
-									src="/images/roastedBeans.png"
+									// src="/images/roastedBeans.png"
+									src={ROASTED_BEANS_IMAGE_URL}
 									alt="Roasted beans"
 									fill
 									priority
 									sizes="(max-width: 768px) 80px, 120px"
 									className="object-cover"
-									onError={(e) => ((e.target as HTMLImageElement).style.display = 'none')}
+									onLoad={() => settleIntroAsset('coffee-title-beans')}
+									onError={(e) => {
+										(e.target as HTMLImageElement).style.display = 'none';
+										settleIntroAsset('coffee-title-beans');
+									}}
 								/>
 							</div>
 						</div>
@@ -482,13 +558,18 @@ export default function CoffeeClient({ featured }: { featured: React.ReactNode }
 					className="xs:block xs:h-72 xs:mt-40 absolute z-10 -mt-10 hidden h-96 w-full [transform:translateZ(0)] overflow-x-hidden overflow-y-visible will-change-transform [backface-visibility:hidden]"
 				>
 					<Image
-						src="/images/coffeeMug.png"
+						// src="/images/coffeeMug.png"
+						src={COFFEE_MUG_IMAGE_URL}
 						alt="Coffee Mug"
 						fill
 						priority
 						sizes="(max-width: 768px) 100vw, 896px"
 						className="object-contain"
-						onError={(e) => ((e.target as HTMLImageElement).style.display = 'none')}
+						onLoad={() => settleIntroAsset('coffee-mug')}
+						onError={(e) => {
+							(e.target as HTMLImageElement).style.display = 'none';
+							settleIntroAsset('coffee-mug');
+						}}
 					/>
 				</div>
 				<div
@@ -497,7 +578,8 @@ export default function CoffeeClient({ featured }: { featured: React.ReactNode }
 				>
 					<div className="relative h-full w-full">
 						<Image
-							src="/images/coffeeBean.png"
+							// src="/images/coffeeBean.png"
+							src={COFFEE_BEAN_IMAGE_URL}
 							alt="Coffee Bean 1"
 							fill
 							loading="lazy"
@@ -513,7 +595,8 @@ export default function CoffeeClient({ featured }: { featured: React.ReactNode }
 				>
 					<div className="relative h-full w-full">
 						<Image
-							src="/images/coffeeBean.png"
+							// src="/images/coffeeBean.png"
+							src={COFFEE_BEAN_IMAGE_URL}
 							alt="Coffee Bean 2"
 							fill
 							loading="lazy"
@@ -528,19 +611,25 @@ export default function CoffeeClient({ featured }: { featured: React.ReactNode }
 					className="xs:h-[480px] xs:-mt-56 xs:ml-32 absolute z-10 -mt-20 h-96 w-full [transform:translateZ(0)] overflow-x-hidden overflow-y-visible will-change-transform [backface-visibility:hidden]"
 				>
 					<Image
-						src="/images/YDcoffeeBag2.png"
+						// src="/images/YDcoffeeBag2.png"
+						src={COFFEE_BAG_2_IMAGE_URL}
 						alt="Open Coffee Bag"
 						fill
 						priority
 						sizes="(max-width: 768px) 100vw, 896px"
 						className="object-contain"
-						onError={(e) => ((e.target as HTMLImageElement).style.display = 'none')}
+						onLoad={() => settleIntroAsset('coffee-bag')}
+						onError={(e) => {
+							(e.target as HTMLImageElement).style.display = 'none';
+							settleIntroAsset('coffee-bag');
+						}}
 					/>
 				</div>
 			</div>
 			<div data-speed="0.2" className="absolute -mt-[3600px] ml-60 h-10 w-10 md:h-14 md:w-14">
 				<Image
-					src="/images/cherry.png"
+					// src="/images/cherry.png"
+					src={CHERRY_IMAGE_URL}
 					alt="Cherry 1"
 					fill
 					loading="lazy"
@@ -554,7 +643,8 @@ export default function CoffeeClient({ featured }: { featured: React.ReactNode }
 				className="absolute right-60 -mt-[3200px] h-10 w-10 md:h-13 md:w-13 2xl:right-1/3"
 			>
 				<Image
-					src="/images/cherry.png"
+					// src="/images/cherry.png"
+					src={CHERRY_IMAGE_URL}
 					alt="Cherry 2"
 					fill
 					loading="lazy"
@@ -571,7 +661,7 @@ export default function CoffeeClient({ featured }: { featured: React.ReactNode }
 					className="md:block hidden h-72 w-52 xl:h-80 xl:w-60 absolute z-50 -rotate-3 -ml-64 lg:-ml-96 mt-[55vh] left-1/2 -translate-x-1/2"
 				>
 					<Image
-						src="/images/POV.jpg"
+						src={STAGE_1_IMAGE_URL}
 						alt="POV"
 						fill
 						loading="lazy"
@@ -585,7 +675,7 @@ export default function CoffeeClient({ featured }: { featured: React.ReactNode }
 					className="md:block hidden h-72 w-52 xl:h-80 xl:w-60 absolute z-50 rotate-3 mt-[95vh] ml-64 lg:ml-96 left-1/2 -translate-x-1/2"
 				>
 					<Image
-						src="/images/POV.jpg"
+						src={STAGE_2_IMAGE_URL}
 						alt="POV"
 						fill
 						loading="lazy"
@@ -599,7 +689,7 @@ export default function CoffeeClient({ featured }: { featured: React.ReactNode }
 					className="md:block hidden h-72 w-52 xl:h-80 xl:w-60 absolute z-50 -rotate-3 -ml-64 lg:-ml-96 mt-[130vh] left-1/2 -translate-x-1/2"
 				>
 					<Image
-						src="/images/POV.jpg"
+						src={STAGE_3_IMAGE_URL}
 						alt="POV"
 						fill
 						loading="lazy"
@@ -613,7 +703,7 @@ export default function CoffeeClient({ featured }: { featured: React.ReactNode }
 					className="md:block hidden h-72 w-52 xl:h-80 xl:w-60 absolute z-50 rotate-3 mt-[165vh] ml-64 lg:ml-96 left-1/2 -translate-x-1/2"
 				>
 					<Image
-						src="/images/POV.jpg"
+						src={STAGE_4_IMAGE_URL}
 						alt="POV"
 						fill
 						loading="lazy"
@@ -725,8 +815,7 @@ export default function CoffeeClient({ featured }: { featured: React.ReactNode }
 										Scroll through our current varieties
 									</h4>
 									<p className="mt-3 text-sm leading-relaxed text-green-900/80">
-										Start scrolling or tap the arrows—your first peek slides over this card, then
-										each lot glides in sequence.
+										Start scrolling or tap the arrows. Short dive into our coffee varieties and their processes.
 									</p>
 								</div>
 							</article>

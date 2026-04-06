@@ -34,7 +34,7 @@ export default function CareersPage() {
 					We would still love to hear from you...
 				</h2>
 				<Button
-					wrapperClass="hover:bg-yellow-400 px-16 text-sm xs:text-md py-3 rounded-full border border-amber-300"
+					wrapperClass="hover:bg-amber-400 px-16 text-sm xs:text-md font-semibold !text-green-900 py-3 rounded-full border-2 border-amber-400"
 					text="Let's Connect"
 					onClick={() => router.push('/contact')}
 				/>

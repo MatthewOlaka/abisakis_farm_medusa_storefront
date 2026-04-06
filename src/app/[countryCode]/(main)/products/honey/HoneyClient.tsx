@@ -1,21 +1,76 @@
+/* eslint-disable prettier/prettier */
 'use client';
 
 import React from 'react';
 import CurvyMarqueeText from '@modules/common/components/curvy-marquee-text';
 import CurvyScrollPipe from '@modules/common/components/curvy-scroll-pipe';
 import ExploreProductsBanner from '@modules/common/components/explore-products-banner';
+import { useHomeIntro } from '@modules/layout/components/home-intro';
 import ScrollDownIndicator from '@modules/common/components/scroll-down-indicator';
 import TimelineText from '@modules/common/components/timeline-text';
 import { gsap } from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
 import Image from 'next/image';
 import { useEffect, useLayoutEffect, useRef, useState } from 'react';
+import { HIVE_IMAGE_URL } from '@modules/home/components/landing';
+import { BEE_IMAGE_URL, HONEY_COMB_IMAGE_URL, HONEY_JAR_IMAGE_URL } from '@lib/constants';
+
+const HONEY_INTRO_IMAGE_IDS = ['honey-title-bee', 'honey-comb', 'honey-jar'] as const;
 
 export default function HoneyClient({ featured }: { featured: React.ReactNode }) {
+	const { isActive: isIntroActive, markReady } = useHomeIntro();
 	const sectionRef = useRef<HTMLElement | null>(null);
 	const jarWrapRef = useRef<HTMLDivElement | null>(null);
 	const pipeStarted = useRef(false);
 	const [isSmallScreen, setIsSmallScreen] = useState(false);
+	const introAssetsLoadedRef = useRef<Set<string>>(new Set());
+	const introRevealQueuedRef = useRef(false);
+	const markReadyRef = useRef(markReady);
+
+	const STAGE_1_IMAGE_URL = 'https://devhzevghepeeyjlabdc.supabase.co/storage/v1/object/public/public-site/honey/steps/honey-stage1.jpg';
+	const STAGE_3_IMAGE_URL = 'https://devhzevghepeeyjlabdc.supabase.co/storage/v1/object/public/public-site/honey/steps/honey-stage3.jpg';
+	// const STAGE_4_IMAGE_URL = 'https://devhzevghepeeyjlabdc.supabase.co/storage/v1/object/public/public-site/honey/steps/honey-stage4v2.jpg';
+	const STAGE_4_IMAGE_URL = 'https://devhzevghepeeyjlabdc.supabase.co/storage/v1/object/public/public-site/honey/steps/honey-stage4v1.jpeg';
+	// const STAGE_4_IMAGE_URL = 'https://devhzevghepeeyjlabdc.supabase.co/storage/v1/object/public/public-site/honey/steps/honey-stage4.jpeg';
+
+	useEffect(() => {
+		markReadyRef.current = markReady;
+	}, [markReady]);
+
+	const queueIntroReveal = () => {
+		if (introRevealQueuedRef.current) return;
+
+		introRevealQueuedRef.current = true;
+		requestAnimationFrame(() => {
+			requestAnimationFrame(() => {
+				markReadyRef.current();
+			});
+		});
+	};
+
+	const settleIntroAsset = (assetId: (typeof HONEY_INTRO_IMAGE_IDS)[number]) => {
+		if (!isIntroActive || introRevealQueuedRef.current) return;
+
+		introAssetsLoadedRef.current.add(assetId);
+		if (introAssetsLoadedRef.current.size !== HONEY_INTRO_IMAGE_IDS.length) return;
+
+		queueIntroReveal();
+	};
+
+	useEffect(() => {
+		if (!isIntroActive) return;
+
+		introAssetsLoadedRef.current = new Set();
+		introRevealQueuedRef.current = false;
+
+		const fallbackTimer = window.setTimeout(() => {
+			queueIntroReveal();
+		}, 4500);
+
+		return () => {
+			window.clearTimeout(fallbackTimer);
+		};
+	}, [isIntroActive]);
 
 	useEffect(() => {
 		const mediaQuery = window.matchMedia('(max-width: 639px)');
@@ -118,13 +173,18 @@ export default function HoneyClient({ featured }: { featured: React.ReactNode })
 					<div className="xs:flex-row xs:items-center relative flex h-full w-full max-w-[750px] flex-col-reverse !justify-evenly overflow-hidden">
 						<div className="motion-safe:animate-levitate xs:mt-20 xs:w-30 relative h-10 w-10 overflow-x-hidden md:w-60">
 							<Image
-								src="/images/bee.png"
+								// src="/images/bee.png"
+								src={BEE_IMAGE_URL}
 								alt="Bee 1"
 								fill
 								priority
 								sizes="(max-width: 768px) 40px, 240px"
 								className="object-contain"
-								onError={(e) => ((e.target as HTMLImageElement).style.display = 'none')}
+								onLoad={() => settleIntroAsset('honey-title-bee')}
+								onError={(e) => {
+									(e.target as HTMLImageElement).style.display = 'none';
+									settleIntroAsset('honey-title-bee');
+								}}
 							/>
 						</div>
 						<h1 className="xs:text-8xl xs:-top-0 xs:left-5 relative -top-6 z-50 w-full text-center font-serif text-[60px] leading-0 font-bold whitespace-nowrap text-green-900 md:text-9xl">
@@ -133,12 +193,17 @@ export default function HoneyClient({ featured }: { featured: React.ReactNode })
 						<div className="flex w-full justify-end">
 							<div className="xs:h-25 xs:w-25 xs:right-10 relative -top-5 right-0 h-20 w-20">
 								<Image
-									src="/images/honeyComb.png"
+									// src="/images/honeyComb.png"
+									src={HONEY_COMB_IMAGE_URL}
 									alt="Honey Comb"
 									fill
 									sizes="(max-width: 768px) 80px, 100px"
 									className="object-cover"
-									onError={(e) => ((e.target as HTMLImageElement).style.display = 'none')}
+									onLoad={() => settleIntroAsset('honey-comb')}
+									onError={(e) => {
+										(e.target as HTMLImageElement).style.display = 'none';
+										settleIntroAsset('honey-comb');
+									}}
 								/>
 							</div>
 						</div>
@@ -151,13 +216,18 @@ export default function HoneyClient({ featured }: { featured: React.ReactNode })
 					className="xs:h-96 xs:-mt-20 relative -mt-10 h-72 w-full [transform:translateZ(0)] overflow-x-hidden overflow-y-visible will-change-transform [backface-visibility:hidden] z-10"
 				>
 					<Image
-						src="/images/honeyJar1.png"
+						// src="/images/honeyJar1.png"
+						src={HONEY_JAR_IMAGE_URL}
 						alt="Honey Jar"
 						fill
 						priority
 						sizes="(max-width: 768px) 100vw, 896px"
 						className="relative overflow-x-hidden overflow-y-visible object-contain"
-						onError={(e) => ((e.target as HTMLImageElement).style.display = 'none')}
+						onLoad={() => settleIntroAsset('honey-jar')}
+						onError={(e) => {
+							(e.target as HTMLImageElement).style.display = 'none';
+							settleIntroAsset('honey-jar');
+						}}
 					/>
 				</div>
 				<div
@@ -165,7 +235,8 @@ export default function HoneyClient({ featured }: { featured: React.ReactNode })
 					className="motion-safe:animate-levitate absolute mt-40 ml-60 h-10 w-10 overflow-x-hidden"
 				>
 					<Image
-						src="/images/bee.png"
+						// src="/images/bee.png"
+						src={BEE_IMAGE_URL}
 						alt="Bee 2"
 						fill
 						loading="lazy"
@@ -198,7 +269,7 @@ export default function HoneyClient({ featured }: { featured: React.ReactNode })
 					className="md:block hidden h-72 w-52 xl:h-80 xl:w-60 absolute z-50 -rotate-3 -ml-64 lg:-ml-96 mt-[55vh] left-1/2 -translate-x-1/2"
 				>
 					<Image
-						src="/images/POV.jpg"
+						src={STAGE_1_IMAGE_URL}
 						alt="POV"
 						fill
 						loading="lazy"
@@ -219,7 +290,7 @@ export default function HoneyClient({ featured }: { featured: React.ReactNode })
 					className="md:block hidden h-72 w-52 xl:h-80 xl:w-60 absolute z-50 rotate-3 mt-[92vh] ml-64 lg:ml-96 left-1/2 -translate-x-1/2"
 				>
 					<Image
-						src="/images/POV.jpg"
+						src={HIVE_IMAGE_URL}
 						alt="POV"
 						fill
 						loading="lazy"
@@ -240,7 +311,7 @@ export default function HoneyClient({ featured }: { featured: React.ReactNode })
 					className="md:block hidden h-72 w-52 xl:h-80 xl:w-60 absolute z-50 -rotate-3 -ml-64 lg:-ml-96 mt-[130vh] left-1/2 -translate-x-1/2"
 				>
 					<Image
-						src="/images/POV.jpg"
+						src={STAGE_3_IMAGE_URL}
 						alt="POV"
 						fill
 						loading="lazy"
@@ -261,7 +332,7 @@ export default function HoneyClient({ featured }: { featured: React.ReactNode })
 					className="md:block hidden h-72 w-52 xl:h-80 xl:w-60 absolute z-50 rotate-3 mt-[162vh] ml-64 lg:ml-96 left-1/2 -translate-x-1/2"
 				>
 					<Image
-						src="/images/POV.jpg"
+						src={STAGE_4_IMAGE_URL}
 						alt="POV"
 						fill
 						loading="lazy"

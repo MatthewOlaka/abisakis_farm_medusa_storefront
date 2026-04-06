@@ -1,6 +1,14 @@
 // app/shop/ShopClient.tsx  (CLIENT)
 'use client';
 
+import {
+	BAG_IMAGE_URL,
+	CAYENNE_IMAGE_URL,
+	COFFEE_BAG_1_IMAGE_URL,
+	HONEY_JAR_IMAGE_URL,
+	PAPRIKA_IMAGE_URL,
+	SQUEEZE_BOTTLE_IMAGE_URL,
+} from '@lib/constants';
 import useParallax from '@lib/hooks/useParallax';
 import { gsap } from 'gsap';
 import Image from 'next/image';
@@ -64,7 +72,8 @@ export default function ShopIntro() {
 				>
 					<div className="drop-item absolute inset-0">
 						<Image
-							src="/images/YDcoffeeBag1.png"
+							// src="/images/YDcoffeeBag1.png"
+							src={COFFEE_BAG_1_IMAGE_URL}
 							alt="Coffee Bag"
 							fill
 							priority
@@ -78,7 +87,8 @@ export default function ShopIntro() {
 				<div className="xs:h-40 xs:ml-10 absolute z-10 mt-36 ml-6 h-24 w-full overflow-x-hidden overflow-y-hidden will-change-transform [backface-visibility:hidden]">
 					<div className="drop-item absolute inset-0 rotate-6 [transform:translateZ(0)]">
 						<Image
-							src="/images/YDCayenne.png"
+							// src="/images/YDCayenne.png"
+							src={CAYENNE_IMAGE_URL}
 							alt="Cayenne Pepper"
 							fill
 							priority
@@ -97,7 +107,8 @@ export default function ShopIntro() {
 				>
 					<div className="drop-item absolute inset-0 rotate-6 [transform:translateZ(0)]">
 						<Image
-							src="/images/YDPaprika.png"
+							// src="/images/YDPaprika.png"
+							src={PAPRIKA_IMAGE_URL}
 							alt="Paprika"
 							fill
 							priority
@@ -111,7 +122,8 @@ export default function ShopIntro() {
 				<div className="xs:h-40 xs:-ml-2 absolute z-10 mt-32 -ml-4 h-28 w-full overflow-x-hidden overflow-y-hidden will-change-transform [backface-visibility:hidden]">
 					<div className="drop-item absolute inset-0 [transform:translateZ(0)]">
 						<Image
-							src="/images/YDSqueezeBottle.png"
+							// src="/images/YDSqueezeBottle.png"
+							src={SQUEEZE_BOTTLE_IMAGE_URL}
 							alt="Honey Squeeze Bottle"
 							fill
 							priority
@@ -128,7 +140,8 @@ export default function ShopIntro() {
 				>
 					<div className="drop-item absolute inset-0 ">
 						<Image
-							src="/images/honeyJar1.png"
+							// src="/images/honeyJar1.png"
+							src={HONEY_JAR_IMAGE_URL}
 							alt="Honey Jar"
 							fill
 							priority
@@ -145,7 +158,8 @@ export default function ShopIntro() {
 				>
 					<div className="drop-bag absolute inset-0">
 						<Image
-							src="/images/YDbag1.png"
+							// src="/images/YDbag1.png"
+							src={BAG_IMAGE_URL}
 							alt="Open Shopping Bag"
 							fill
 							priority

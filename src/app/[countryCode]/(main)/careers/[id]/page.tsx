@@ -3,8 +3,23 @@ import { notFound } from 'next/navigation';
 import { jobs } from '@modules/common/data/jobs';
 import LocalizedClientLink from '@modules/common/components/localized-client-link';
 import ApplyForm from '@modules/common/components/apply-form';
+import { Metadata } from 'next';
 
 type IProps = { params: Promise<{ id: string }> };
+
+export async function generateMetadata({ params }: IProps): Promise<Metadata> {
+	const { id } = await params;
+	const job = jobs.find((j) => j.id === id);
+	if (!job) return { title: "Position Not Found | Abisaki's Farm" };
+	return {
+		title: `${job.position} | Careers | Abisaki's Farm`,
+		description: job.summary || `Apply for ${job.position} at Abisaki's Farm.`,
+		openGraph: {
+			title: `${job.position} | Abisaki's Farm`,
+			description: job.summary || `Apply for ${job.position} at Abisaki's Farm.`,
+		},
+	};
+}
 
 export default async function JobPage({ params }: IProps) {
 	const { id } = await params;

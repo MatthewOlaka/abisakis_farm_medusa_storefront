@@ -5,15 +5,16 @@ import Image from 'next/image';
 
 interface IProps {
 	wrapperClassname?: string;
+	isWhite?: boolean;
 }
 
 export default function LogoLink(props: IProps) {
-	const { wrapperClassname } = props;
+	const { wrapperClassname, isWhite } = props;
 	return (
 		<LocalizedClientLink href="/" className="flex items-center gap-2">
 			<div className={`${wrapperClassname} relative`}>
 				<Image
-					src="/images/logo.png" // ensure /public/images/logo.png exists
+					src={isWhite ? '/images/logo_white.png' : '/images/logo.png'}
 					alt="Abisaki's Farm"
 					fill
 					// sizes="80px"

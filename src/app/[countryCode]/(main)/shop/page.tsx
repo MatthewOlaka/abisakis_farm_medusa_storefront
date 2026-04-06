@@ -13,8 +13,10 @@ import ShopCTA from './ShopCTA';
 
 export const metadata: Metadata = {
 	title: 'Shop | Abisaki’s Farm',
-	description: 'Browse all products by category.',
-};
+	description: 'Browse all products by category.',	openGraph: {
+		title: 'Shop | Abisaki\u2019s Farm',
+		description: 'Browse honey, coffee, and more from Abisaki\u2019s Farm.',
+	},};
 
 type PageProps = {
 	params: { countryCode: string };

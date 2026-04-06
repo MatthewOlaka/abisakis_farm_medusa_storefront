@@ -17,19 +17,6 @@ export default function NavLinks() {
 	const [productsOpen, setProductsOpen] = useState(false);
 	const productsRef = useRef<HTMLLIElement>(null);
 
-	// Hide-on-scroll (applies to the left/center block)
-	const [visible, setVisible] = useState(true);
-	const last = useRef(0);
-	useEffect(() => {
-		const onScroll = () => {
-			const y = window.scrollY;
-			setVisible(!(y > last.current && y > 50));
-			last.current = y;
-		};
-		window.addEventListener('scroll', onScroll, { passive: true });
-		return () => window.removeEventListener('scroll', onScroll);
-	}, []);
-
 	// Close desktop dropdown on outside click
 	useEffect(() => {
 		if (!productsOpen) return;
@@ -45,9 +32,7 @@ export default function NavLinks() {
 		href === '/' ? pathname === '/' : pathname === href || pathname.startsWith(href + '/');
 
 	return (
-		<div
-			className={`flex items-center gap-8 transition-transform duration-300 ${visible ? 'translate-y-0' : '-translate-y-full'}`}
-		>
+		<div className="flex items-center gap-8">
 			{/* Desktop nav */}
 			<ul className="hidden items-center gap-6 md:flex">
 				{/* Products dropdown */}
@@ -69,31 +54,32 @@ export default function NavLinks() {
 					</button>
 
 					<div
-						className={`absolute right-0 mt-2 w-44 rounded-md bg-white p-1 shadow-xl transition-all ${
+						className={`absolute right-0 top-full pt-2 transition-all ${
 							productsOpen ? 'visible opacity-100' : 'invisible opacity-0'
 						}`}
-						role="menu"
 					>
-						<LocalizedClientLink
-							href="/products/honey"
-							role="menuitem"
-							className={`block rounded-lg px-3 py-2 text-sm transition-colors hover:bg-amber-50 hover:text-amber-600 ${
-								isActive('/products/honey') ? 'bg-amber-50 text-amber-600' : 'text-gray-700'
-							}`}
-							onClick={() => setProductsOpen(false)}
-						>
-							Honey
-						</LocalizedClientLink>
-						<LocalizedClientLink
-							href="/products/coffee"
-							role="menuitem"
-							className={`block rounded-lg px-3 py-2 text-sm transition-colors hover:bg-amber-50 hover:text-amber-600 ${
-								isActive('/products/coffee') ? 'bg-amber-50 text-amber-600' : 'text-gray-700'
-							}`}
-							onClick={() => setProductsOpen(false)}
-						>
-							Coffee
-						</LocalizedClientLink>
+						<div className="w-44 rounded-md bg-white p-1 shadow-xl" role="menu">
+							<LocalizedClientLink
+								href="/products/honey"
+								role="menuitem"
+								className={`block rounded-lg px-3 py-2 text-sm transition-colors hover:bg-amber-50 hover:text-amber-600 ${
+									isActive('/products/honey') ? 'bg-amber-50 text-amber-600' : 'text-gray-700'
+								}`}
+								onClick={() => setProductsOpen(false)}
+							>
+								Honey
+							</LocalizedClientLink>
+							<LocalizedClientLink
+								href="/products/coffee"
+								role="menuitem"
+								className={`block rounded-lg px-3 py-2 text-sm transition-colors hover:bg-amber-50 hover:text-amber-600 ${
+									isActive('/products/coffee') ? 'bg-amber-50 text-amber-600' : 'text-gray-700'
+								}`}
+								onClick={() => setProductsOpen(false)}
+							>
+								Coffee
+							</LocalizedClientLink>
+						</div>
 					</div>
 				</li>
 

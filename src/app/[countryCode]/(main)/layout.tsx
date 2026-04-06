@@ -7,6 +7,11 @@ import { StoreCartShippingOption } from '@medusajs/types';
 import CartMismatchBanner from '@modules/layout/components/cart-mismatch-banner';
 // import Footer from '@modules/layout/templates/footer';
 import FreeShippingPriceNudge from '@modules/shipping/components/free-shipping-price-nudge';
+import {
+	HomeIntroNavShell,
+	HomeIntroOverlay,
+	HomeIntroProvider,
+} from '@modules/layout/components/home-intro';
 import Navbar from '@modules/layout/components/nav-bar';
 // import { Inter, Judson } from 'next/font/google';
 // import Nav from '@modules/layout/templates/nav';
@@ -41,16 +46,21 @@ export default async function PageLayout(props: { children: React.ReactNode }) {
 
 	return (
 		<ScrollProvider>
-			<div className={`${inter.variable} ${judson.variable} font-sans`}>
-				{/* <Nav /> */}
-				<Navbar />
-				{customer && cart && <CartMismatchBanner customer={customer} cart={cart} />}
-				{cart && (
-					<FreeShippingPriceNudge variant="popup" cart={cart} shippingOptions={shippingOptions} />
-				)}
-				{props.children}
-				<Footer />
-			</div>
+			<HomeIntroProvider>
+				<div className={`${inter.variable} ${judson.variable} font-sans`}>
+					<HomeIntroOverlay />
+					{/* <Nav /> */}
+					<HomeIntroNavShell>
+						<Navbar />
+					</HomeIntroNavShell>
+					{customer && cart && <CartMismatchBanner customer={customer} cart={cart} />}
+					{cart && (
+						<FreeShippingPriceNudge variant="popup" cart={cart} shippingOptions={shippingOptions} />
+					)}
+					{props.children}
+					<Footer />
+				</div>
+			</HomeIntroProvider>
 		</ScrollProvider>
 	);
 }

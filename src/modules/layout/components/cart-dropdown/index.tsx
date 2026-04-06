@@ -464,7 +464,8 @@ const CartDropdown = ({ cart: cartState }: { cart?: HttpTypes.StoreCart | null }
 											})}
 										</span>
 									</div>
-									<LocalizedClientLink href="/cart" passHref>
+									{/* TODO: Re-enable once checkout is complete */}
+									{/* <LocalizedClientLink href="/cart" passHref>
 										<Button
 											variant="primary"
 											size="large"
@@ -473,7 +474,31 @@ const CartDropdown = ({ cart: cartState }: { cart?: HttpTypes.StoreCart | null }
 										>
 											Go to cart
 										</Button>
-									</LocalizedClientLink>
+									</LocalizedClientLink> */}
+									<a
+										href={`https://wa.me/12368824656?text=${encodeURIComponent(
+											`Hi! I'd like to order the following items:\n\n${cartState.items
+												.map(
+													(item) =>
+														`- ${item.product_title} (x${item.quantity}) — ${cartState.currency_code.toUpperCase()} ${item.unit_price}`,
+												)
+												.join(
+													'\n',
+												)}\n\nSubtotal: ${convertToLocale({ amount: subtotal, currency_code: cartState.currency_code })}`,
+										)}`}
+										target="_blank"
+										rel="noopener noreferrer"
+										className="w-full"
+									>
+										<Button
+											variant="primary"
+											size="large"
+											className="w-full bg-green-800 hover:bg-green-700"
+											data-testid="whatsapp-inquiry-button"
+										>
+											Inquire via WhatsApp
+										</Button>
+									</a>
 								</div>
 							</>
 						) : (

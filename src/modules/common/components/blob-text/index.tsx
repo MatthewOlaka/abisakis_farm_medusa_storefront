@@ -1,8 +1,7 @@
 // src/components/BlobText.tsx
 'use client';
 
-import { useId, useMemo } from 'react';
-import { Button } from '../button';
+import { type FormEvent, useId, useMemo, useState } from 'react';
 
 interface IProps {
 	title: string;
@@ -27,13 +26,69 @@ const BlobText = ({
 	scale,
 	staticId,
 }: IProps) => {
+	const [isSubmitting, setIsSubmitting] = useState(false);
+	const [submitState, setSubmitState] = useState<{
+		type: 'success' | 'error';
+		message: string;
+	} | null>(null);
+
+	const handleContactSubmit = async (event: FormEvent<HTMLFormElement>) => {
+		event.preventDefault();
+
+		if (isSubmitting) {
+			return;
+		}
+
+		setSubmitState(null);
+		setIsSubmitting(true);
+
+		try {
+			const form = event.currentTarget;
+			const values = new FormData(form);
+			const fullName = String(values.get('name') ?? '').trim();
+			const [firstName = '', ...lastNameParts] = fullName.split(/\s+/);
+			const safeFirstName = firstName || 'Guest';
+			const safeLastName = lastNameParts.join(' ').trim() || 'N/A';
+			const payload = new FormData();
+
+			payload.append('firstName', safeFirstName);
+			payload.append('lastName', safeLastName);
+			payload.append('email', String(values.get('email') ?? ''));
+			payload.append('phone', String(values.get('phone') ?? ''));
+			payload.append('message', String(values.get('message') ?? ''));
+			payload.append('reason', 'general');
+			payload.append('source', 'landing-blob');
+			payload.append('hp', String(values.get('hp') ?? ''));
+
+			const response = await fetch('/api/contact', {
+				method: 'POST',
+				body: payload,
+			});
+
+			if (!response.ok) {
+				throw new Error('Request failed');
+			}
+
+			setSubmitState({
+				type: 'success',
+				message: 'Thanks! We received your message.',
+			});
+			form.reset();
+		} catch {
+			setSubmitState({
+				type: 'error',
+				message: 'Unable to submit right now. Please try again.',
+			});
+		} finally {
+			setIsSubmitting(false);
+		}
+	};
+
 	// Stable, SSR-safe id for the clipPath (sanitize useId’s colons for url(#...))
-	// const rawId = useId();
-	const rawId = staticId ?? useId();
+	const generatedId = useId();
+	const rawId = staticId ?? generatedId;
 	const clipId = useMemo(() => `blobClip-${rawId.replace(/:/g, '')}`, [rawId]);
 	const pathId = `${clipId}-path`;
-
-	const align = style; // map to Tailwind text alignment
 	// const textAlignClass =
 	// 	align === 'left'
 	// 		? 'text-left'
@@ -186,8 +241,7 @@ const BlobText = ({
 				<svg
 					viewBox="10 20 250 230"
 					xmlns="http://www.w3.org/2000/svg"
-					// className={`h-full w-full ${scale}`}
-					className={`xs:max-w-[170px] h-full w-full max-w-[110px] ${scale}`}
+					className="h-full max-h-[800px] w-full min-w-[440px] max-w-[560px] xs:max-w-[680px] scale-150 md:scale-125"
 					aria-labelledby={`${pathId}-title ${pathId}-desc`}
 					role="img"
 				>
@@ -195,12 +249,8 @@ const BlobText = ({
 					<desc id={`${pathId}-desc`}>{description}</desc>
 
 					<defs>
-						{/* The blob shape path (centered with translate) */}
 						<path
 							id={pathId}
-							// d="M51.2,-59.9C61.5,-52.4,61.6,-31.6,64,-12.1C66.4,7.4,71.3,25.7,65.3,39.4C59.4,53.2,42.7,62.4,25.1,68.6C7.5,74.9,-11,78.1,-25.1,71.8C-39.3,65.5,-49,49.7,-57.2,33.8C-65.4,18,-72,2,-72.4,-15.7C-72.8,-33.5,-66.9,-53.1,-53.8,-60.1C-40.6,-67,-20.3,-61.4,0.1,-61.5C20.5,-61.6,40.9,-67.4,51.2,-59.9Z"
-							// d="M53.9,-60.6C68.8,-51.7,79.1,-33.7,82.3,-14.6C85.6,4.5,81.7,24.7,70.6,37.7C59.4,50.7,41.1,56.5,23.8,60.9C6.5,65.3,-9.7,68.3,-21.3,62.4C-32.9,56.5,-39.8,41.7,-50.6,27.2C-61.4,12.7,-76,-1.7,-76.9,-16.5C-77.8,-31.3,-64.9,-46.6,-49.7,-55.4C-34.6,-64.2,-17.3,-66.6,1.1,-67.9C19.5,-69.2,39,-69.4,53.9,-60.6Z"
-							// d="M66.842-58.458C83.216-47.164,94.535-24.321,98.051-.083c3.626,24.239-.659,49.873-12.857,66.371C72.886,82.785,52.776,90.146,33.765,95.73s-36.814,9.391-49.561,1.9-20.33-26.269-32.2-44.67S-75.907,16.288-76.9-2.494s13.187-38.2,29.89-49.365C-30.412-63.027-11.4-66.072,8.82-67.722S50.468-69.626,66.842-58.458Z"
 							d="M104.788-56.622c20.695,13.348,35,40.343,39.445,68.987C148.817,41.01,143.4,71.3,127.983,90.8,112.427,110.3,87.01,119,62.981,125.6s-46.529,11.1-62.64,2.25-25.7-31.044-40.7-52.79S-75.633,31.712-76.883,9.516-60.216-35.626-39.1-48.823c20.973-13.2,45-16.8,70.557-18.747S84.093-69.819,104.788-56.622Z"
 							transform="translate(100 100) scale(1.1)"
 							className="stroke-yellow-200 stroke-[0.5px]"
@@ -210,41 +260,39 @@ const BlobText = ({
 						</clipPath>
 					</defs>
 
-					{/* Blob fill */}
 					<use href={`#${pathId}`} fill={fill} />
 
-					{/* Real HTML text clipped to the blob via foreignObject */}
 					<foreignObject clipPath={`url(#${clipId})`} x="0" y="-10" width="270" height="250">
-						{/* Must set the XHTML namespace inside foreignObject */}
 						<div
 							className={`flex h-full w-full flex-col ${textAlignClass} items-center justify-center`}
+							style={{ WebkitFontSmoothing: 'antialiased' }}
 						>
-							<div className="mt-6 flex h-[40px] w-full">
-								{/* <Title
-									wrapperClass="h-[60px] !text-3xl mt-1 w-full bg-red-500"
-									title={heading ?? 'Contact Us'}
-								/> */}
-								<h1 className="mt-5 flex w-full items-center justify-center font-serif text-[26px] font-bold text-green-800 lg:mt-8 lg:text-2xl">
-									Contact Us
+							<div className="mt-10 xs:mt-9 flex h-[40px] w-full">
+								<h1 className="flex w-full items-center justify-center font-serif text-[26px] font-bold text-green-900 lg:text-2xl">
+									{heading ?? 'Contact Us'}
 								</h1>
 							</div>
 							<div className="flex h-full w-full max-w-[200px] flex-col items-center justify-center md:flex-row">
-								<h1 className="-mt-14 hidden flex-1 pr-5 text-start font-serif text-[15px] leading-none text-green-900 md:block">
+								<h1 className="-mt-20 hidden flex-1 pr-5 text-start font-serif text-[15px] leading-none text-green-900 md:block">
 									{title}
 								</h1>
-								<div className="xs:mt-0 mt-3 w-[100px] flex-1">
-									<form
-									// onSubmit={onSubmit}
-									// className="flex w-[min(90vw,520px)] flex-col gap-3 rounded-2xl bg-white/90 p-4 shadow-xl ring-1 ring-black/5 backdrop-blur"
-									>
+								{/* <div className="xs:-mt-10 mt-3 w-[100px] flex-1"> */}
+								<div className="md:-mt-5 w-[100px] flex-1">
+									<form onSubmit={handleContactSubmit}>
+										<input
+											type="text"
+											name="hp"
+											autoComplete="off"
+											className="hidden"
+											tabIndex={-1}
+										/>
 										<input
 											id="name"
 											name="name"
-											type="email"
+											type="text"
 											required
 											placeholder="Name"
-											// className="focus:border-brand-500 focus:ring-brand-200 rounded-lg border border-gray-300 px-3 text-gray-900 outline-none focus:ring-2"
-											className="h-[13px] w-[100px] rounded-sm border border-gray-300 pl-1 text-[6px] text-gray-900"
+											className="h-[13px] w-[100px] rounded-sm border border-gray-300 pl-1 text-[5px] text-gray-900 caret-gray-400 focus:outline-none focus:border-gray-400 focus:ring-[0.5px] focus:ring-gray-300"
 											suppressHydrationWarning
 										/>
 										<input
@@ -253,46 +301,49 @@ const BlobText = ({
 											type="email"
 											required
 											placeholder="Email"
-											// className="focus:border-brand-500 focus:ring-brand-200 rounded-lg border border-gray-300 px-3 text-gray-900 outline-none focus:ring-2"
-											className="h-[13px] w-[100px] rounded-sm border border-gray-300 pl-1 text-[6px] text-gray-900"
+											className="h-[13px] w-[100px] rounded-sm border border-gray-300 pl-1 text-[5px] text-gray-900 caret-gray-400 focus:outline-none focus:border-gray-400 focus:ring-[0.5px] focus:ring-gray-300"
 											suppressHydrationWarning
 										/>
 										<input
 											id="phone-number"
-											name="phone-number"
-											type="number"
+											name="phone"
+											type="tel"
 											required
 											placeholder="Phone Number"
-											// className="focus:border-brand-500 focus:ring-brand-200 rounded-lg border border-gray-300 px-3 text-gray-900 outline-none focus:ring-2"
-											className="h-[13px] w-[100px] rounded-sm border border-gray-300 pl-1 text-[6px] text-gray-900"
+											className="h-[13px] w-[100px] rounded-sm border border-gray-300 pl-1 text-[5px] text-gray-900 caret-gray-400 focus:outline-none focus:border-gray-400 focus:ring-[0.5px] focus:ring-gray-300"
 											suppressHydrationWarning
 										/>
-										<label className="mt-1 flex justify-start text-[6px] text-gray-500">
-											Message
-										</label>
-										<div className="">
-											{/* <textarea /> */}
+										<div>
+											<label className="mt-1 flex justify-start text-[5px] text-gray-500">
+												Message
+											</label>
 											<textarea
 												id="message"
 												name="message"
 												rows={5}
 												required
-												placeholder=""
-												// className="focus:border-brand-500 focus:ring-brand-200 rounded-lg border border-gray-300 px-3 text-gray-900 outline-none focus:ring-2"
-												className="w-[100px] resize-none rounded-sm border border-gray-300 pl-1 text-[6px] text-gray-900"
+												className="w-[100px] resize-none rounded-sm border border-gray-300 pl-1 text-[5px] text-gray-900 caret-gray-400 focus:outline-none focus:border-gray-400 focus:ring-[0.5px] focus:ring-gray-300"
 												suppressHydrationWarning
 											/>
 										</div>
-										<div className="">
-											<Button
-												text="Submit"
-												// onClick={() => router.push(item.href)}
-												primaryColor={'bg-yellow-500'}
-												secondaryColor={'text-white'}
-												borderRadius="rounded-lg"
-												size="x-small"
-											/>
+										<div>
+											<button
+												type="submit"
+												disabled={isSubmitting}
+												className="text-[5px] w-full rounded-lg bg-yellow-400 py-1 font-semibold text-green-900 hover:bg-amber-400 disabled:opacity-60"
+											>
+												{isSubmitting ? 'Sending…' : 'Send message'}
+											</button>
 										</div>
+										{submitState && (
+											<p
+												className={`mt-1 text-[6px] ${
+													submitState.type === 'success' ? 'text-green-700' : 'text-red-700'
+												}`}
+											>
+												{submitState.message}
+											</p>
+										)}
 									</form>
 								</div>
 							</div>

@@ -7,8 +7,18 @@ import { getRegion } from '@lib/data/regions';
 import Landing from '@modules/home/components/landing';
 
 export const metadata: Metadata = {
-	title: 'Medusa Next.js Starter Template',
-	description: 'A performant frontend ecommerce starter template with Next.js 15 and Medusa.',
+	title: "Abisaki's Farm | Pure Kenyan Honey, Coffee & More",
+	description: 'Discover pure Kenyan honey, artisan coffee, and farm-fresh products from Abisaki\'s Farm.',
+	openGraph: {
+		title: "Abisaki's Farm | Pure Kenyan Honey, Coffee & More",
+		description: 'Discover pure Kenyan honey, artisan coffee, and farm-fresh products from Abisaki\'s Farm.',
+		type: 'website',
+	},
+	twitter: {
+		card: 'summary_large_image',
+		title: "Abisaki's Farm | Pure Kenyan Honey, Coffee & More",
+		description: 'Discover pure Kenyan honey, artisan coffee, and farm-fresh products from Abisaki\'s Farm.',
+	},
 };
 
 export default async function Home(props: { params: Promise<{ countryCode: string }> }) {

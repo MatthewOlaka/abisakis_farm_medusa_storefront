@@ -6,8 +6,7 @@ import { Spinner } from '@lib/components/ui/spinner';
 import { addToCart } from '@lib/data/cart';
 import Image from 'next/image';
 import { useState } from 'react';
-// import { usePathname, useRouter } from 'next/navigation';
-// import { MouseEvent, useState } from 'react';
+import { toast } from 'sonner';
 
 interface IProps {
 	id: string;
@@ -32,8 +31,6 @@ const ItemCard = ({
 	wrapperClass = '',
 	imageClass = '',
 }: IProps) => {
-	console.log('imageSrc :', imageSrc);
-
 	const [isAdding, setIsAdding] = useState(false);
 	// add the selected variant to the cart
 	const handleAddToCart = async (e: React.MouseEvent<HTMLButtonElement>) => {
@@ -43,11 +40,17 @@ const ItemCard = ({
 
 		setIsAdding(true);
 
-		await addToCart({
+		const { error } = await addToCart({
 			variantId: id,
 			quantity: 1,
 			countryCode: 'ke',
 		});
+
+		if (error) {
+			toast.error(error);
+		} else {
+			toast.success('Added to cart');
+		}
 
 		setIsAdding(false);
 	};
@@ -59,9 +62,15 @@ const ItemCard = ({
 					'group relative flex h-52 w-60 flex-col justify-end rounded-2xl',
 					'bg-yellow-200 transition-colors duration-300 hover:bg-yellow-400',
 					'shadow-sm',
+					outOfStock ? 'opacity-70' : '',
 					wrapperClass,
 				].join(' ')}
 			>
+				{outOfStock && (
+					<div className="absolute top-2 left-2 z-10 rounded bg-red-600 px-2 py-1 text-xs font-semibold text-white">
+						Out of Stock
+					</div>
+				)}
 				<div className="flex w-full items-center justify-around">
 					{bestSeller && (
 						<h1 className="text-brown-700 mt-7 h-48 rotate-180 font-serif text-4xl font-bold opacity-60 [writing-mode:vertical-lr]">

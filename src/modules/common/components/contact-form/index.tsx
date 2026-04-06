@@ -5,15 +5,20 @@ import Select, { SingleValue } from 'react-select';
 
 type ReasonOption = { value: string; label: string };
 
+type ContactFormProps = {
+	source?: 'landing' | 'contact-page' | string;
+};
+
 const REASONS: ReasonOption[] = [
 	{ value: 'general', label: 'General Inquiry' },
 	{ value: 'support', label: 'Product Support' },
+	{ value: 'support', label: 'Coffee Inquiry' },
 	{ value: 'partnership', label: 'Partnerships' },
 	{ value: 'careers', label: 'Careers' },
 	{ value: 'press', label: 'Press' },
 ];
 
-export default function ContactForm() {
+export default function ContactForm({ source = 'contact-page' }: ContactFormProps) {
 	const [reason, setReason] = useState<ReasonOption | null>(null);
 	const [status, setStatus] = useState<'idle' | 'submitting' | 'success' | 'error'>('idle');
 
@@ -24,6 +29,7 @@ export default function ContactForm() {
 		const form = e.currentTarget;
 		const data = new FormData(form);
 		data.set('reason', reason?.value || '');
+		data.set('source', source);
 
 		try {
 			// Send to an API route you control
@@ -42,6 +48,9 @@ export default function ContactForm() {
 
 	return (
 		<form onSubmit={onSubmit} className="grid grid-cols-1 gap-4">
+			<input type="text" name="hp" className="hidden" tabIndex={-1} autoComplete="off" />
+			<input type="hidden" name="source" value={source} />
+
 			{/* First / Last names inline on md+ */}
 			<div className="grid grid-cols-1 gap-4 md:grid-cols-2">
 				<div>
@@ -142,7 +151,7 @@ export default function ContactForm() {
 				<button
 					type="submit"
 					disabled={status === 'submitting'}
-					className="w-full rounded-lg bg-yellow-400 px-4 py-3 font-semibold text-green-900 hover:bg-yellow-300 disabled:opacity-60"
+					className="w-full rounded-lg bg-yellow-400 px-4 py-3 font-semibold text-green-900 hover:bg-amber-400 disabled:opacity-60"
 				>
 					{status === 'submitting' ? 'Sending…' : 'Send message'}
 				</button>

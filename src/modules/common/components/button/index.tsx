@@ -43,9 +43,9 @@ export const Button = (props: IButtonProps) => {
 			type={type}
 			onClick={onClick}
 			className={cn(
-				'cursor-pointer',
+				'cursor-pointer flex items-center w-full justify-center gap-1',
 				wrapperClass,
-				primaryColor || 'bg-yellow-500 hover:bg-yellow-400',
+				primaryColor || 'bg-yellow-500 hover:bg-amber-400',
 				secondaryColor || 'text-white',
 				borderRadius || 'rounded',
 				sizeClass,

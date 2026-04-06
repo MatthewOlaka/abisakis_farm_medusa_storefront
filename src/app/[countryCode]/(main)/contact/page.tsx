@@ -1,9 +1,21 @@
 import { faWhatsapp } from '@fortawesome/free-brands-svg-icons';
 import { faEnvelope, faLocationDot, faPhone } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { MAP_CENTER, MAP_MARKERS, MAP_PERIMETER } from '@lib/constants';
 import ContactForm from '@modules/common/components/contact-form';
 import MapCard from '@modules/common/components/map-card';
+import { Metadata } from 'next';
 import Image from 'next/image';
+
+export const metadata: Metadata = {
+	title: "Contact Us | Abisaki's Farm",
+	description:
+		'Get in touch with Abisaki\'s Farm. Questions about our honey, coffee, or orders? Our team is here to help.',
+	openGraph: {
+		title: "Contact Us | Abisaki's Farm",
+		description: 'Get in touch with Abisaki\'s Farm — we\'d love to hear from you.',
+	},
+};
 
 export default function ContactPage() {
 	return (
@@ -26,14 +38,16 @@ export default function ContactPage() {
 					{/* Left: form (stretches to the tallest content) */}
 					<div className="h-full">
 						<div className="h-full rounded-md border border-green-900/20 bg-green-900 p-5 md:p-6">
-							<ContactForm />
+							<ContactForm source="contact-page" />
 						</div>
 					</div>
 
 					{/* Right: image (matches form height because they share the same grid row) */}
 					<div className="relative h-[280px] overflow-hidden rounded-md border border-green-900/20 md:h-auto">
 						<Image
-							src="/images/contact.jpg" // <-- replace with your actual image
+							src={
+								'https://devhzevghepeeyjlabdc.supabase.co/storage/v1/object/public/public-site/generic/contact.jpg'
+							} // <-- replace with your actual image
 							alt="Our office"
 							fill
 							className="object-cover"
@@ -118,90 +132,15 @@ export default function ContactPage() {
 							</a>
 						</div>
 					</div>
-
-					{/* Bottom: full-width map spanning both columns */}
-					{/* <div className="mt-2 md:col-span-2">
-						<div className="relative max-h-[250px] w-full overflow-hidden rounded-xl border-2 border-yellow-500/90">
-							<div className="relative aspect-[16/9] w-full">
-								<iframe
-									className="absolute inset-0 h-full max-h-[250px] w-full"
-									// Replace 'Your+Address+Here' with your real address/search query
-									src="https://www.google.com/maps?q=Your+Address+Here&output=embed"
-									loading="lazy"
-								/>
-							</div>
-						</div>
-					</div> */}
 					<div className="mt-2 rounded-2xl border-3 border-yellow-500 md:col-span-2">
 						{/* Add multiple estate markers with quick info cards */}
 						<MapCard
-							center={{ lat: 0.9941949, lng: 35.1327557 }}
+							center={MAP_CENTER}
 							zoom={17}
 							markerTitle="YDH Coffee Estate"
-							// className="h-[360px] md:h-[460px]" // optional responsive height
 							className="h-[260px]" // optional responsive height
-							perimeter={[
-								{ lat: 0.9966, lng: 35.1323 },
-								{ lat: 0.997, lng: 35.1337 },
-								{ lat: 0.9918, lng: 35.1339 },
-								{ lat: 0.9915, lng: 35.1312 },
-							]}
-							markers={[
-								{
-									title: 'Bee hives',
-									position: { lat: 0.996162, lng: 35.132909 },
-									description: '50 colonized bee hives',
-									imageSrc: '/images/YDcoffeeBag2.png',
-								},
-								{
-									title: 'Cluster 1',
-									position: { lat: 0.995779, lng: 35.132868 },
-									description: 'Processing, roasting',
-									imageSrc: '/images/YDcoffeeBag2.png',
-								},
-								{
-									title: 'Factory',
-									position: { lat: 0.994905, lng: 35.13232 },
-									description: 'Processing, roasting, and packaging hub.',
-									imageSrc: '/images/YDcoffeeBag2.png',
-								},
-								{
-									title: 'Poultry housing',
-									position: { lat: 0.994767, lng: 35.13215 },
-									description: 'Processing, roasting, and packaging hub.',
-									imageSrc: '/images/YDcoffeeBag2.png',
-								},
-								{
-									title: 'Villa',
-									position: { lat: 0.995179, lng: 35.132842 },
-									description: 'Processing, roasting, and packaging hub.',
-									imageSrc: '/images/YDcoffeeBag2.png',
-								},
-								{
-									title: 'Avocado trees',
-									position: { lat: 0.9947, lng: 35.132845 },
-									description: 'Processing, roasting, and packaging hub.',
-									imageSrc: '/images/YDcoffeeBag2.png',
-								},
-								{
-									title: 'Cluster 2',
-									position: { lat: 0.995274, lng: 35.133355 },
-									description: 'Processing, roasting, and packaging hub.',
-									imageSrc: '/images/YDcoffeeBag2.png',
-								},
-								{
-									title: 'Cluster 3',
-									position: { lat: 0.993779, lng: 35.132706 },
-									description: 'Processing, roasting, and packaging hub.',
-									imageSrc: '/images/YDcoffeeBag2.png',
-								},
-								{
-									title: 'Cluster 4',
-									position: { lat: 0.992103, lng: 35.132579 },
-									description: 'Processing, roasting, and packaging hub.',
-									imageSrc: '/images/YDcoffeeBag2.png',
-								},
-							]}
+							perimeter={MAP_PERIMETER}
+							markers={MAP_MARKERS}
 						/>
 					</div>
 				</div>
