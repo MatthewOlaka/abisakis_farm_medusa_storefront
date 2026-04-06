@@ -47,6 +47,7 @@ const CountrySelect = ({ toggleState, regions }: CountrySelectProps) => {
         }))
       })
       .flat()
+      .filter((o) => o && o.country)
       .sort((a, b) => (a?.label ?? "").localeCompare(b?.label ?? ""))
   }, [regions])
 
@@ -69,7 +70,7 @@ const CountrySelect = ({ toggleState, regions }: CountrySelectProps) => {
         onChange={handleChange}
         defaultValue={
           countryCode
-            ? options?.find((o) => o?.country === countryCode)
+            ? (options?.find((o) => o?.country === countryCode) as CountryOption | undefined)
             : undefined
         }
       >

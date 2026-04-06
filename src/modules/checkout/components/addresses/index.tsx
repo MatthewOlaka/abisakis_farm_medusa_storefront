@@ -132,7 +132,7 @@ const Addresses = ({
 													Extra delivery information
 												</Text>
 												<Text className="txt-medium text-ui-fg-subtle">
-													{cart?.shipping_address?.metadata?.dropoff_instructions as String}
+													{cart?.shipping_address?.metadata?.dropoff_instructions as string}
 												</Text>
 											</div>
 										)}
@@ -180,7 +180,7 @@ const Addresses = ({
 												Extra delivery information
 											</Text>
 											<Text className="txt-medium text-ui-fg-subtle">
-												{cart?.shipping_address?.metadata?.dropoff_instructions as String}
+												{cart?.shipping_address?.metadata?.dropoff_instructions as string}
 											</Text>
 										</div>
 									)}

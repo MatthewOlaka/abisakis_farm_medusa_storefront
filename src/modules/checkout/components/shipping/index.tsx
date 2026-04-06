@@ -175,10 +175,7 @@ const Shipping: React.FC<ShippingProps> = ({ cart, availableShippingMethods }) =
 					const pricesMap: Record<string, number> = {};
 					res
 						.filter((r) => r.status === 'fulfilled')
-						.forEach((p) => (pricesMap[p.value?.id || ''] = p.value?.amount!));
-
-					setCalculatedPricesMap(pricesMap);
-					setIsLoadingPrices(false);
+											.forEach((p) => (pricesMap[p.value?.id || ''] = p.value?.amount ?? 0));
 				});
 			}
 		}
@@ -402,7 +399,7 @@ const Shipping: React.FC<ShippingProps> = ({ cart, availableShippingMethods }) =
 															<span className="text-base">{option.name}</span>
 															<span className="text-sm text-slate-700">
 																{formatAddress(
-																	option.service_zone?.fulfillment_set?.location?.address,
+																	option.service_zone?.fulfillment_set?.location?.address as HttpTypes.StoreCartAddress,
 																)}
 															</span>
 														</div>
