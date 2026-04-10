@@ -115,6 +115,7 @@ const Footer = () => {
 								</button>
 								{/* INLINE INPUT STATE */}
 								<form
+									suppressHydrationWarning
 									onSubmit={onSubmit}
 									className={[
 										'absolute inset-0 flex items-center justify-end transition-all duration-300',
@@ -125,6 +126,7 @@ const Footer = () => {
 								>
 									{/* Honeypot - hidden from users, bots often fill it */}
 									<input
+										suppressHydrationWarning
 										tabIndex={-1}
 										autoComplete="off"
 										name="hp"
@@ -134,6 +136,7 @@ const Footer = () => {
 
 									<div className="flex h-[44px] w-dvw items-center justify-center rounded-sm border border-white/70 bg-white px-1 shadow-lg ring-1 ring-black/5 backdrop-blur md:max-w-[350px] md:justify-end">
 										<input
+											suppressHydrationWarning
 											name="email"
 											type="email"
 											required

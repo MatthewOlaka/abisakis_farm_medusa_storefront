@@ -32,7 +32,7 @@ export default function ShopSectionText(props: IProps) {
 				<h2 className="text-center font-serif text-5xl md:text-7xl font-bold text-green-900">
 					{CATEGORY_LABEL[active]}
 				</h2>
-				<p className="text-sm xs:text-xl mt-5 max-w-170 text-center font-sans text-green-900">
+				<p className="text-sm xs:text-lg mt-5 max-w-170 text-center font-sans text-green-900">
 					{CATEGORY_DESCRIPTION[active]}
 				</p>
 			</div>

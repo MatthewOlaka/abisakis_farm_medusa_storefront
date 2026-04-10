@@ -12,19 +12,21 @@ type HomeIntroContextValue = {
 	isActive: boolean;
 	isExiting: boolean;
 	isIntroRoute: boolean;
-	introKind: 'home' | 'product' | null;
+	introKind: 'home' | 'product' | 'shop' | null;
 	markReady: () => void;
 };
 
 const HomeIntroContext = createContext<HomeIntroContextValue | null>(null);
 
-function getIntroKind(pathname: string): 'home' | 'product' | null {
+function getIntroKind(pathname: string): 'home' | 'product' | 'shop' | null {
 	const segments = pathname.split('/').filter(Boolean);
 	const first = segments[0] ?? '';
 	const hasCountryPrefix = /^[a-z]{2}$/i.test(first);
 	const routeSegments = hasCountryPrefix ? segments.slice(1) : segments;
 
 	if (routeSegments.length === 0) return 'home';
+
+	if (routeSegments.length === 1 && routeSegments[0] === 'shop') return 'shop';
 
 	if (routeSegments.length === 2 && routeSegments[0] === 'products') {
 		return routeSegments[1] === 'coffee' || routeSegments[1] === 'honey' ? 'product' : null;
@@ -102,7 +104,7 @@ export function HomeIntroOverlay() {
 			<div className="absolute inset-x-0 bottom-0 h-px bg-green-900/20" />
 
 			<div className="relative z-10 flex max-w-xl flex-col items-center px-6 text-center text-green-900">
-				<div className="relative h-28 w-40 md:h-72 md:w-96">
+				<div className="relative h-36 w-48 md:h-72 md:w-96">
 					<Image
 						src="/images/logo.png"
 						alt="Abisaki's Farm"
@@ -112,10 +114,10 @@ export function HomeIntroOverlay() {
 						sizes="208px"
 					/>
 				</div>
-				<p className="text-sm font-semibold uppercase tracking-[0.35em] text-green-900/65">
+				<p className="text-xs md:text-sm font-semibold uppercase tracking-wider md:tracking-[0.35em] text-green-900/65">
 					Abisaki&apos;s Farm
 				</p>
-				<p className="mt-2 max-w-md text-xl font-serif font-bold leading-tight md:text-4xl text-green-900">
+				<p className="mt-2 max-w-sm md:max-w-md text-2xl font-serif font-bold leading-tight md:text-4xl text-green-900">
 					Pure Kenyan honey, coffee, and much more.
 				</p>
 			</div>
@@ -126,7 +128,7 @@ export function HomeIntroOverlay() {
 export function HomeIntroNavShell({ children }: { children: React.ReactNode }) {
 	const context = useHomeIntro();
 
-	if (context.introKind !== 'home') {
+	if (context.introKind !== 'home' && context.introKind !== 'shop') {
 		return <>{children}</>;
 	}
 
@@ -134,7 +136,7 @@ export function HomeIntroNavShell({ children }: { children: React.ReactNode }) {
 		return <>{children}</>;
 	}
 
-	const shouldShowNav = !context.isActive || (context.introKind === 'home' && context.isExiting);
+	const shouldShowNav = !context.isActive || ((context.introKind === 'home' || context.introKind === 'shop') && context.isExiting);
 
 	return (
 		<div

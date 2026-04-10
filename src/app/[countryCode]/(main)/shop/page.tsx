@@ -43,7 +43,7 @@ export default async function Page({ params, searchParams }: PageProps) {
 				<ShopSectionText active={category as ICategory} />
 
 				{/* Key by category so Suspense refires when it changes */}
-				<div className="mt-10">
+				<div className="md:mt-10">
 					<Suspense key={category} fallback={<GridSkeleton />}>
 						{/* Server component fetches, formats, and renders ItemCards */}
 						<ShopGrid countryCode={countryCode} category={category} />

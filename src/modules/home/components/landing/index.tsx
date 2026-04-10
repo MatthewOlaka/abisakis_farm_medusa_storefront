@@ -160,79 +160,97 @@ const Landing = () => {
 		const ctx = gsap.context(() => {
 			const mm = gsap.matchMedia();
 
-			// --- DESKTOP: smooth pinned scene ---
-			mm.add('(min-width: 1px)', () => {
-				if (!heroContainerRef.current || !wrapRef.current || !overlayRef.current || !ctaRef.current)
-					return;
+			// --- Hero pinned scene (mobile-optimised) ---
+			mm.add(
+				{
+					isDesktop: '(min-width: 768px)',
+					isMobile: '(max-width: 767px)',
+				},
+				(context) => {
+					const { isMobile } = context.conditions!;
 
-				// Initial states - start at normal size
-				gsap.set(wrapRef.current, {
-					// width: 500,
-					// height: 200,
-					position: 'relative',
-					left: 'auto',
-					top: 'auto',
-				});
-				gsap.set(overlayRef.current, { opacity: 0 });
-				gsap.set(ctaRef.current, { opacity: 0, y: 24, pointerEvents: 'none' });
+					if (
+						!heroContainerRef.current ||
+						!wrapRef.current ||
+						!overlayRef.current ||
+						!ctaRef.current
+					)
+						return;
 
-				// MAIN PINNED SCENE - expands hero to fullscreen
-				const tl = gsap.timeline({
-					scrollTrigger: {
-						trigger: heroContainerRef.current,
-						start: 'top center',
-						end: '+=800vh',
-						pin: true,
-						pinSpacing: true,
-						scrub: 1.5,
-						fastScrollEnd: true,
-						invalidateOnRefresh: true,
-					},
-					defaults: { ease: 'none' },
-				});
+					// Initial states - start at normal size
+					gsap.set(wrapRef.current, {
+						position: 'relative',
+						left: 'auto',
+						top: 'auto',
+						force3D: true,
+					});
+					gsap.set(overlayRef.current, { opacity: 0 });
+					gsap.set(ctaRef.current, { opacity: 0, y: 24, pointerEvents: 'none' });
 
-				// Pre-animate: move to center before expansion starts (duration 0)
-				tl.to(
-					wrapRef.current,
-					{
-						position: 'fixed',
-						top: '50%',
-						left: '50%',
-						xPercent: -50,
-						yPercent: -50,
-						duration: 0,
-					},
-					0,
-				)
-					// Then: expand to fullscreen from center (0 to 0.7)
-					.to(
+					// MAIN PINNED SCENE - expands hero to fullscreen
+					const tl = gsap.timeline({
+						scrollTrigger: {
+							trigger: heroContainerRef.current,
+							start: 'top center',
+							end: '+=800vh',
+							pin: true,
+							pinSpacing: true,
+							// Mobile: near-instant scrub to avoid lag during fast flicks
+							// Desktop: smooth 1.5 s eased scrub
+							scrub: isMobile ? 0.3 : 1.5,
+							fastScrollEnd: true,
+							anticipatePin: 1,
+							invalidateOnRefresh: true,
+						},
+						defaults: { ease: 'none' },
+					});
+
+					// Pre-animate: move to center before expansion starts (duration 0)
+					tl.to(
 						wrapRef.current,
 						{
-							width: '100vw',
-							height: '110vh',
-							duration: 0.7,
+							position: 'fixed',
+							top: '50%',
+							left: '50%',
+							xPercent: -50,
+							yPercent: -50,
+							force3D: true,
+							duration: 0,
 						},
 						0,
 					)
-					.to(overlayRef.current, { opacity: 0.6, duration: 0.7 }, 0)
-					// Second: fade in CTA after image expansion (starting at 0.7)
-					.to(
-						ctaRef.current,
-						{
-							opacity: 1,
-							y: 0,
-							pointerEvents: 'auto',
-							duration: 1,
-							ease: 'power2.out',
-						},
-						0.7,
-					);
+						// Then: expand to fullscreen from center (0 to 0.7)
+						.to(
+							wrapRef.current,
+							{
+								width: '100vw',
+								height: '110vh',
+								force3D: true,
+								duration: 0.7,
+							},
+							0,
+						)
+						.to(overlayRef.current, { opacity: 0.6, duration: 0.7 }, 0)
+						// Second: fade in CTA after image expansion (starting at 0.7)
+						.to(
+							ctaRef.current,
+							{
+								opacity: 1,
+								y: 0,
+								pointerEvents: 'auto',
+								force3D: true,
+								duration: 1,
+								ease: 'power2.out',
+							},
+							0.7,
+						);
 
-				return () => {
-					tl.scrollTrigger?.kill();
-					tl.kill();
-				};
-			}); // Your map draw timeline can stay (or leave as you had it)
+					return () => {
+						tl.scrollTrigger?.kill();
+						tl.kill();
+					};
+				},
+			); // Your map draw timeline can stay (or leave as you had it)
 			if (mapSectionRef.current && stickyRef.current && pathRef.current) {
 				const MAP_DRAW_SCROLL_DISTANCE_PX = 1100;
 				const MAP_PIN_SCROLL_DISTANCE_PX = 660;

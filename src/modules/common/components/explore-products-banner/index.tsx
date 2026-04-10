@@ -1,8 +1,12 @@
 import Image from 'next/image';
 import { Button } from '../button';
 import { BRANCH_IMAGE_URL, CHILLI_IMAGE_URL, HONEY_SPOON_IMAGE_URL } from '@lib/constants';
+import { useRouter } from 'next/navigation';
+
 
 const ExploreProductsBanner = () => {
+
+	const router = useRouter();
 	return (
 		<div className="xs:h-64 relative flex h-96 w-full justify-between overflow-hidden rounded-3xl bg-green-900 md:max-w-[850px]">
 			{/* Left honey spoon */}
@@ -38,6 +42,7 @@ const ExploreProductsBanner = () => {
 					</div>
 				</div>
 				<Button
+					onClick={() => router.push('/shop')}
 					text="Shop Now"
 					size="medium"
 					borderRadius="rounded-xl"
